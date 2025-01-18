@@ -1,7 +1,7 @@
 import sys
 from PyPDF2 import PdfReader, PdfWriter
 
-def merge_pdfs(a_path, b_path, output_path, reverse_b=False):
+def merge_pdfs(a_path, b_path, output_path, reverse_b=False, skip_last_b=False):
     """
     交叉合并两个PDF文件
     
@@ -10,6 +10,7 @@ def merge_pdfs(a_path, b_path, output_path, reverse_b=False):
         b_path (str): 第二个PDF文件路径
         output_path (str): 输出文件路径
         reverse_b (bool): 是否反向合并第二个PDF
+        skip_last_b (bool): 是否跳过反面文件的最后一页（反向时为第一页）
     """
     writer = PdfWriter()
     a_pdf = PdfReader(a_path)
@@ -18,6 +19,8 @@ def merge_pdfs(a_path, b_path, output_path, reverse_b=False):
     # 获取两个PDF的页数
     a_pages = len(a_pdf.pages)
     b_pages = len(b_pdf.pages)
+    if skip_last_b:
+        b_pages = max(0, b_pages - 1)
     max_pages = max(a_pages, b_pages)
 
     # 交叉合并页面
@@ -34,16 +37,19 @@ def merge_pdfs(a_path, b_path, output_path, reverse_b=False):
         writer.write(output_pdf)
 
 if __name__ == "__main__":
-    if len(sys.argv) < 4 or len(sys.argv) > 5:
-        print("Usage: python pdf_cross_merge.py a.pdf b.pdf output.pdf [--reverse-b]")
+    if len(sys.argv) < 4 or len(sys.argv) > 6:
+        print("Usage: python pdf_cross_merge.py a.pdf b.pdf output.pdf [--reverse-b] [--skip-last-b]")
         sys.exit(1)
 
     a_path = sys.argv[1]
     b_path = sys.argv[2]
     output_path = sys.argv[3]
-    reverse_b = len(sys.argv) == 5 and sys.argv[4] == "--reverse-b"
+    reverse_b = "--reverse-b" in sys.argv
+    skip_last_b = "--skip-last-b" in sys.argv
 
-    merge_pdfs(a_path, b_path, output_path, reverse_b)
+    merge_pdfs(a_path, b_path, output_path, reverse_b, skip_last_b)
     print(f"PDFs merged successfully! Output saved to {output_path}")
     if reverse_b:
         print("Second PDF was merged in reverse order")
+    if skip_last_b:
+        print("Last page of second PDF was skipped")
