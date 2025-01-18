@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PDF交叉合并工具</title>
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f7fa;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-y: auto;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 1.25rem;
+      max-width: 600px;
+      width: 90%;
+      margin: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .panels-container {
+      width: 100%;
+      margin-top: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .left-panel {
+      width: 100%;
+    }
+
+    .right-panel {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .description {
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .description ol {
+      margin: 0.5rem 0;
+    }
+
+    .description ul {
+      margin: 0.25rem 0;
+    }
+
+    .description li {
+      margin: 0.25rem 0;
+    }
+
+    h1 {
+      color: #1a1a1a;
+      margin: 0 0 0.75rem 0;
+      font-weight: 600;
+      text-align: center;
+      width: 100%;
+    }
+
+    .description {
+      margin: 0;
+      padding: 0.75rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+    }
+
+    .description p {
+      margin: 0.15rem 0;
+      color: #495057;
+    }
+
+    .description ul, .description ol {
+      margin: 0.15rem 0;
+      padding-left: 1rem;
+    }
+
+    .description li {
+      margin: 0.1rem 0;
+    }
+
+    .description .note {
+      margin-top: 1rem;
+      padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+      background: #e8f4ff;
+      border-radius: 6px;
+      border: 1px solid #b8daff;
+      color: #004085;
+      position: relative;
+    }
+
+    .description .note::before {
+      content: "ℹ️";
+      position: absolute;
+      left: 0.75rem;
+      top: 0.75rem;
+      font-size: 1.2rem;
+    }
+
+    .file-input {
+      margin: 0.5rem 0;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border: 2px dashed #dee2e6;
+      transition: border-color 0.2s;
+      position: relative;
+    }
+
+    .file-input.dragover {
+      border-color: #0d6efd;
+      background: #e8f0fe;
+    }
+
+    .file-input label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #495057;
+    }
+
+    .file-input .drop-zone {
+      padding: 1.5rem;
+      text-align: center;
+      color: #6c757d;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .file-input .drop-zone:hover {
+      color: #0d6efd;
+    }
+
+    .file-input input[type="file"] {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .file-input .selected-file {
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: white;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      color: #495057;
+      word-break: break-all;
+      display: none;
+    }
+
+    .file-input.has-file .selected-file {
+      display: block;
+    }
+
+    .options {
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .options label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #495057;
+    }
+
+    button {
+      width: 100%;
+      padding: 1rem;
+      background: #0d6efd;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 1rem;
+    }
+
+    button:hover {
+      background: #0b5ed7;
+    }
+
+    button:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 1rem;
+      color: #6c757d;
+    }
+
+    .alert {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      animation: slideIn 0.3s ease-out;
+      z-index: 1000;
+    }
+
+    .alert.success {
+      background: #d1e7dd;
+      border: 1px solid #badbcc;
+      color: #0f5132;
+    }
+
+    .alert.error {
+      background: #f8d7da;
+      border: 1px solid #f5c2c7;
+      color: #842029;
+    }
+
+    .alert .icon {
+      font-size: 1.2rem;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 1rem;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>PDF交叉合并工具</h1>
+    <div class="panels-container">
+      <div class="left-panel">
+        <div class="description">
+        <p>合并扫描文档的正反面：</p>
+        <ul>
+          <li>正面保存为 front.pdf</li>
+          <li>反面保存为 back.pdf</li>
+          <li>反向合并：反面从后向前扫描时使用</li>
+          <li>旋转页面：反面上下颠倒时使用</li>
+        </ul>
+        <p class="note">浏览器本地运行，文件安全</p>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="file-input" id="file-input-1">
+        <label>选择正面PDF文件 (例如front.pdf):</label>
+        <div class="drop-zone">
+          <span>点击选择或拖放PDF文件到这里</span>
+          <input type="file" id="file1" accept="application/pdf">
+        </div>
+        <div class="selected-file"></div>
+      </div>
+
+      <div class="file-input" id="file-input-2">
+        <label>选择反面PDF文件 (例如back.pdf):</label>
+        <div class="drop-zone">
+          <span>点击选择或拖放PDF文件到这里</span>
+          <input type="file" id="file2" accept="application/pdf">
+        </div>
+        <div class="selected-file"></div>
+      </div>
+
+      <div class="options">
+        <label>
+          <input type="checkbox" id="reverseB">
+          反向合并反面PDF
+        </label>
+        <label style="margin-top: 0.5rem;">
+          <input type="checkbox" id="rotateB">
+          旋转180度反面PDF的页面
+        </label>
+      </div>
+
+      <button onclick="mergePdfs()">合并PDF</button>
+    </div>
+    </div>
+
+    <script>
+      // 处理文件选择和拖放
+      function setupFileInput(inputId) {
+        const container = document.getElementById(inputId);
+        const fileInput = container.querySelector('input[type="file"]');
+        const dropZone = container.querySelector('.drop-zone');
+        const selectedFile = container.querySelector('.selected-file');
+
+        function updateFileName() {
+          if (fileInput.files.length > 0) {
+            container.classList.add('has-file');
+            selectedFile.textContent = `已选择: ${fileInput.files[0].name}`;
+          } else {
+            container.classList.remove('has-file');
+            selectedFile.textContent = '';
+          }
+        }
+
+        fileInput.addEventListener('change', updateFileName);
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+          dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          });
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+          dropZone.addEventListener(eventName, () => {
+            container.classList.add('dragover');
+          });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+          dropZone.addEventListener(eventName, () => {
+            container.classList.remove('dragover');
+          });
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+          const dt = e.dataTransfer;
+          const files = dt.files;
+          
+          if (files.length > 0 && files[0].type === 'application/pdf') {
+            fileInput.files = files;
+            updateFileName();
+          }
+        });
+      }
+
+      // 初始化文件输入
+      setupFileInput('file-input-1');
+      setupFileInput('file-input-2');
+
+      async function mergePdfs() {
+        const file1 = document.getElementById('file1').files[0];
+        const file2 = document.getElementById('file2').files[0];
+        const reverseB = document.getElementById('reverseB').checked;
+        const rotateB = document.getElementById('rotateB').checked;
+
+        if (!file1 || !file2) {
+          showAlert('error', '请选择两个PDF文件');
+          return;
+        }
+
+        try {
+          // 读取PDF文件
+          const [pdf1Bytes, pdf2Bytes] = await Promise.all([
+            file1.arrayBuffer(),
+            file2.arrayBuffer()
+          ]);
+
+          // 加载PDF
+          const [pdf1, pdf2] = await Promise.all([
+            PDFLib.PDFDocument.load(pdf1Bytes),
+            PDFLib.PDFDocument.load(pdf2Bytes)
+          ]);
+
+          // 创建新PDF
+          const mergedPdf = await PDFLib.PDFDocument.create();
+
+          // 获取页面数量
+          const pages1 = pdf1.getPages();
+          const pages2 = pdf2.getPages();
+          const maxPages = Math.max(pages1.length, pages2.length);
+
+          // 交叉合并页面
+          for (let i = 0; i < maxPages; i++) {
+            if (i < pages1.length) {
+              const [page] = await mergedPdf.copyPages(pdf1, [i]);
+              mergedPdf.addPage(page);
+            }
+            if (i < pages2.length) {
+              const pageIndex = reverseB ? pages2.length - 1 - i : i;
+              const [page] = await mergedPdf.copyPages(pdf2, [pageIndex]);
+              if (rotateB) {
+                const currentRotation = page.getRotation().angle;
+                page.setRotation(PDFLib.degrees(currentRotation + 180));
+              }
+              mergedPdf.addPage(page);
+            }
+          }
+
+          // 生成并下载合并后的PDF
+          const mergedPdfBytes = await mergedPdf.save();
+          const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = 'merged.pdf';
+          link.click();
+          
+          showAlert('success', 'PDF合并成功！文件已开始下载。');
+        } catch (error) {
+          console.error(error);
+          showAlert('error', 'PDF合并失败：' + error.message);
+        }
+      }
+
+      function showAlert(type, message) {
+        const alertBox = document.createElement('div');
+        alertBox.className = `alert ${type}`;
+        alertBox.innerHTML = `
+          <span class="icon">${type === 'success' ? '✅' : '❌'}</span>
+          <span class="message">${message}</span>
+        `;
+        
+        document.body.appendChild(alertBox);
+        
+        // 自动消失
+        setTimeout(() => {
+          alertBox.remove();
+        }, 5000);
+      }
+    </script>
+  </div>
+</body>
+</html>
