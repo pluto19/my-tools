@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>PDF交叉合并工具</title>
+  <title>PDF Cross Merge Tool</title>
+  <meta name="keywords" content="PDF merge, PDF combine, PDF交叉合并, PDF合并工具, 在线PDF合并, PDF文件合并, PDF页面合并, PDF文档处理, PDF工具, 免费PDF合并, 正反扫描件合并, front and back scan merge, 双面扫描合并, double-sided scan merge, 正反面PDF合并, front back PDF merge">
   <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <style>
     body {
@@ -289,23 +290,23 @@
 </head>
 <body>
   <div class="container">
-    <h1>PDF交叉合并工具</h1>
+    <h1>PDF Cross Merge Tool</h1>
     <div class="panels-container">
       <div class="left-panel">
         <div class="description">
-        <p>合并扫描文档的正反面：</p>
+        <p>Merge scanned document pages:</p>
         <ul>
-          <li>正面保存为 front.pdf</li>
-          <li>反面保存为 back.pdf</li>
-          <li>反向合并：反面从后向前扫描时使用</li>
-          <li>旋转页面：反面上下颠倒时使用</li>
-          <li>跳过最后一页：当反面文件多出一页时使用</li>
+          <li>Front pages saved as front.pdf</li>
+          <li>Back pages saved as back.pdf</li>
+          <li>Reverse merge: Use when back pages are scanned in reverse order</li>
+          <li>Rotate pages: Use when back pages are upside down</li>
+          <li>Skip last page: Use when back file has one extra page</li>
         </ul>
-        <p class="note">浏览器本地运行，文件安全</p>
-        <p>使用场景：</p>
+        <p class="note">Runs locally in browser, files stay secure</p>
+        <p>Use cases:</p>
         <ul>
-          <li>正反扫描件合并：将正面和反面扫描的PDF文件合并为一个文件</li>
-          <li>照片正反面合并：将照片的正反面扫描件合并保存</li>
+          <li>Front and back scan merge: Merge front and back scanned PDF files into one</li>
+          <li>Photo front and back merge: Merge front and back scanned photos</li>
         </ul>
       </div>
     </div>
@@ -313,7 +314,7 @@
     <div class="right-panel">
       <div class="file-input" id="file-input-1">
         <div class="drop-zone">
-          <span>选择正面PDF文件 (例如front.pdf)<br>点击选择或拖放PDF文件到这里</span>
+          <span>Select front PDF file (e.g. front.pdf)<br>Click to select or drag & drop PDF file here</span>
           <input type="file" id="file1" accept="application/pdf">
         </div>
         <div class="selected-file"></div>
@@ -321,7 +322,7 @@
 
       <div class="file-input" id="file-input-2">
         <div class="drop-zone">
-          <span>选择反面PDF文件 (例如back.pdf)<br>点击选择或拖放PDF文件到这里</span>
+          <span>Select back PDF file (e.g. back.pdf)<br>Click to select or drag & drop PDF file here</span>
           <input type="file" id="file2" accept="application/pdf">
         </div>
         <div class="selected-file"></div>
@@ -330,24 +331,24 @@
       <div class="options">
         <label>
           <input type="checkbox" id="reverseB">
-          反向合并反面PDF
+          Reverse merge back PDF
         </label>
         <label style="margin-top: 0.5rem;">
           <input type="checkbox" id="rotateB">
-          旋转180度反面PDF的页面
+          Rotate back PDF pages 180 degrees
         </label>
         <label style="margin-top: 0.5rem;">
           <input type="checkbox" id="skipLastB">
-          跳过反面文件的最后一页
+          Skip last page of back file
         </label>
       </div>
 
-      <button onclick="mergePdfs()">合并PDF</button>
+      <button onclick="mergePdfs()">Merge PDFs</button>
     </div>
     </div>
 
     <script>
-      // 处理文件选择和拖放
+      // Handle file selection and drag & drop
       function setupFileInput(inputId) {
         const container = document.getElementById(inputId);
         const fileInput = container.querySelector('input[type="file"]');
@@ -357,7 +358,7 @@
         function updateFileName() {
           if (fileInput.files.length > 0) {
             container.classList.add('has-file');
-            selectedFile.textContent = `已选择: ${fileInput.files[0].name}`;
+            selectedFile.textContent = `Selected: ${fileInput.files[0].name}`;
           } else {
             container.classList.remove('has-file');
             selectedFile.textContent = '';
@@ -396,7 +397,7 @@
         });
       }
 
-      // 初始化文件输入
+      // Initialize file inputs
       setupFileInput('file-input-1');
       setupFileInput('file-input-2');
 
@@ -408,27 +409,27 @@
         const skipLastB = document.getElementById('skipLastB').checked;
 
         if (!file1 || !file2) {
-          showAlert('error', '请选择两个PDF文件');
+          showAlert('error', 'Please select two PDF files');
           return;
         }
 
         try {
-          // 读取PDF文件
+          // Read PDF files
           const [pdf1Bytes, pdf2Bytes] = await Promise.all([
             file1.arrayBuffer(),
             file2.arrayBuffer()
           ]);
 
-          // 加载PDF
+          // Load PDFs
           const [pdf1, pdf2] = await Promise.all([
             PDFLib.PDFDocument.load(pdf1Bytes),
             PDFLib.PDFDocument.load(pdf2Bytes)
           ]);
 
-          // 创建新PDF
+          // Create new PDF
           const mergedPdf = await PDFLib.PDFDocument.create();
 
-          // 获取页面数量
+          // Get page counts
           const pages1 = pdf1.getPages();
           let pages2 = pdf2.getPages();
           if (skipLastB) {
@@ -436,7 +437,7 @@
           }
           const maxPages = Math.max(pages1.length, pages2.length);
 
-          // 交叉合并页面
+          // Cross-merge pages
           for (let i = 0; i < maxPages; i++) {
             if (i < pages1.length) {
               const [page] = await mergedPdf.copyPages(pdf1, [i]);
@@ -453,7 +454,7 @@
             }
           }
 
-          // 生成并下载合并后的PDF
+          // Generate and download merged PDF
           const mergedPdfBytes = await mergedPdf.save();
           const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
           const link = document.createElement('a');
@@ -461,10 +462,10 @@
           link.download = 'merged.pdf';
           link.click();
           
-          showAlert('success', 'PDF合并成功！文件已开始下载。');
+          showAlert('success', 'PDFs merged successfully! Download started.');
         } catch (error) {
           console.error(error);
-          showAlert('error', 'PDF合并失败：' + error.message);
+          showAlert('error', 'PDF merge failed: ' + error.message);
         }
       }
 
@@ -478,7 +479,7 @@
         
         document.body.appendChild(alertBox);
         
-        // 自动消失
+        // Auto-dismiss
         setTimeout(() => {
           alertBox.remove();
         }, 5000);
