@@ -580,34 +580,10 @@
       setupFileInput('file-input-2');
       resetFileInputs();
 
-      // 保存用户选项
-      function saveOptions() {
-        const options = {
-          reverseB: document.getElementById('reverseB').checked,
-          rotateB: document.getElementById('rotateB').checked,
-          skipLastB: document.getElementById('skipLastB').checked
-        };
-        localStorage.setItem('pdfMergeOptions', JSON.stringify(options));
-      }
-
-      // 加载用户选项
-      function loadOptions() {
-        const savedOptions = localStorage.getItem('pdfMergeOptions');
-        if (savedOptions) {
-          const options = JSON.parse(savedOptions);
-          document.getElementById('reverseB').checked = options.reverseB;
-          document.getElementById('rotateB').checked = options.rotateB;
-          document.getElementById('skipLastB').checked = options.skipLastB;
-        }
-      }
-
-      // 加载保存的选项
-      loadOptions();
-
-      // 监听选项变化并保存
-      document.querySelectorAll('.options input[type="checkbox"]').forEach(checkbox => {
-        checkbox.addEventListener('change', saveOptions);
-      });
+      // 初始化选项状态
+      document.getElementById('reverseB').checked = false;
+      document.getElementById('rotateB').checked = false;
+      document.getElementById('skipLastB').checked = false;
 
       async function mergePdfs() {
         const file1 = document.getElementById('file1').files[0];
