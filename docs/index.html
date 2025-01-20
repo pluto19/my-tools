@@ -683,7 +683,10 @@
           progressText.textContent = '正在生成最终PDF...';
 
           // 生成并下载合并后的PDF
-          const mergedPdfBytes = await mergedPdf.save();
+          const mergedPdfBytes = await mergedPdf.save({
+            useObjectStreams: true,
+            compressPDF: true
+          });
           const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
           const link = document.createElement('a');
           link.href = URL.createObjectURL(blob);
