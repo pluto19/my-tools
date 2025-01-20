@@ -10,8 +10,21 @@ function setupFileInput(inputId) {
       const file = fileInput.files[0];
       container.classList.add('has-file');
       
+      // 添加loading状态
+      container.classList.add('loading');
+      selectedFile.innerHTML = `
+        <div class="loading-spinner">
+          <svg viewBox="0 0 24 24" width="24" height="24">
+            <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
+          </svg>
+        </div>
+        <div>正在加载 ${file.name}...</div>
+      `;
+      
       try {
         const pdfDoc = await PDFLib.PDFDocument.load(await file.arrayBuffer());
+        // 移除loading状态
+        container.classList.remove('loading');
         const pageCount = pdfDoc.getPageCount();
         const fileSize = (file.size / 1024 / 1024).toFixed(2);
         
@@ -27,6 +40,7 @@ function setupFileInput(inputId) {
           </div>
         `;
       } catch (error) {
+        container.classList.remove('loading');
         selectedFile.innerHTML = `
           <div style="color: #dc3545;">
             <i class="fas fa-exclamation-circle"></i>
