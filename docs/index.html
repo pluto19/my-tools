@@ -565,9 +565,20 @@
         });
       }
 
+      // 重置文件选择框
+      function resetFileInputs() {
+        document.getElementById('file1').value = '';
+        document.getElementById('file2').value = '';
+        document.querySelectorAll('.file-input').forEach(input => {
+          input.classList.remove('has-file');
+          input.querySelector('.selected-file').textContent = '';
+        });
+      }
+
       // 初始化文件输入
       setupFileInput('file-input-1');
       setupFileInput('file-input-2');
+      resetFileInputs();
 
       // 保存用户选项
       function saveOptions() {
