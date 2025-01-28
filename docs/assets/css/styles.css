@@ -7,8 +7,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  overflow-y: auto;
+  justify-content: flex-start;
+  overflow-x: hidden;
 }
 
 .nav-container {
@@ -23,7 +23,7 @@ body {
 .nav-content {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0.75rem 1.5rem;
+  padding: 1rem 1.5rem;
   display: flex;
   justify-content: center;
   gap: 2rem;
@@ -61,11 +61,12 @@ body {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
   max-width: 1200px;
-  width: 100%;
-  margin: 4rem 0.5rem 0.5rem;
+  width: calc(100% - 2rem);
+  margin: 5rem auto 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+  box-sizing: border-box;
 }
 
 .panels-container {
@@ -419,8 +420,8 @@ button:disabled {
 
 .beian {
   text-align: center;
-  padding: 1rem;
-  margin-top: 2rem;
+  padding: 0.5rem;
+  margin-top: 1rem;
   width: 100%;
   background: #f8f9fa;
   border-top: 1px solid #e9ecef;
@@ -432,7 +433,7 @@ button:disabled {
   font-size: 0.85rem;
   transition: color 0.2s;
   display: inline-block;
-  padding: 0.5rem;
+  padding: 0.25rem;
 }
 
 .beian a:hover {
