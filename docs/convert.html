@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>图片格式转换工具 - 在线转换HEIC等格式图片为JPG/PNG</title>
+  <meta name="description" content="免费在线图片转换工具，支持HEIC、PNG、JPG等格式互转。可自定义压缩质量，完全在浏览器本地运行，保障文件安全。">
+  <meta name="keywords" content="图片转换,HEIC转换,JPG转换,PNG转换,图片压缩,在线图片工具,HEIC转JPG,图片格式转换">
+  <link rel="canonical" href="https://pdf.geargallery.online/convert.html" />
+  <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+  <script src="https://unpkg.com/heic2any@0.0.4/dist/heic2any.min.js"></script>
+  <script src="https://unpkg.com/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9024574583281237"
+     crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="nav-container">
+    <div class="nav-content">
+      <a href="index.html" class="nav-link">
+        <svg viewBox="0 0 384 512" width="16" height="16">
+          <path d="M369.9 97.9L286 14C277 5 264.8-.1 252.1-.1H48C21.5 0 0 21.5 0 48v416c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V131.9c0-12.7-5.1-25-14.1-34zM332.1 128H256V51.9l76.1 76.1zM48 464V48h160v104c0 13.3 10.7 24 24 24h104v288H48z"/>
+        </svg>
+        PDF合并
+      </a>
+      <a href="convert.html" class="nav-link active">
+        <svg viewBox="0 0 512 512" width="16" height="16">
+          <path d="M448 80c8.8 0 16 7.2 16 16V415.8l-5-6.5-136-176c-4.5-5.9-11.6-9.3-19-9.3s-14.4 3.4-19 9.3L202 340.7l-30.5-42.7C167 291.7 159.8 288 152 288s-15 3.7-19.5 10.1l-80 112L48 416.3l0-.3V96c0-8.8 7.2-16 16-16H448zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm80 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z"/>
+        </svg>
+        图片转换
+      </a>
+    </div>
+  </div>
+  <div class="container">
+    <h1>图片格式转换工具</h1>
+    <div class="panels-container">
+      <div class="left-panel">
+        <div class="description">
+          <p>支持的图片格式：</p>
+          <ul>
+            <li>输入格式：HEIC、JPG、PNG、WEBP、BMP等</li>
+            <li>输出格式：JPG、PNG</li>
+          </ul>
+          <p>功能特点：</p>
+          <ul>
+            <li>批量转换：支持同时转换多个文件</li>
+            <li>压缩控制：可调节输出图片的质量</li>
+            <li>本地处理：完全在浏览器中进行，保护隐私</li>
+            <li>预览功能：转换前后对比预览</li>
+          </ul>
+          <p class="note">浏览器本地运行，文件安全</p>
+          <p>使用场景：</p>
+          <ul>
+            <li>iPhone HEIC照片转换：将苹果手机拍摄的HEIC照片转为通用的JPG格式</li>
+            <li>图片压缩：在保证质量的同时减小文件体积</li>
+            <li>格式统一：将不同格式的图片转换为统一格式</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="right-panel">
+        <div class="file-inputs-container">
+          <div class="file-input" id="file-input-images">
+            <div class="drop-zone">
+              <svg viewBox="0 0 384 512" width="28" height="28" style="fill: #0d6efd; margin-bottom: 0.5rem; filter: drop-shadow(0 2px 2px rgba(13, 110, 253, 0.2));">
+                <path d="M384 121.9v6.1H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9zM248 160h136v328c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V24C0 10.7 10.7 0 24 0h200v136c0 13.2 10.8 24 24 24zm-84.1 66.3c-5.6-5.6-14.8-5.6-20.4 0l-36 36-36-36c-5.6-5.6-14.8-5.6-20.4 0s-5.6 14.8 0 20.4l36 36-36 36c-5.6 5.6-5.6 14.8 0 20.4 5.6 5.6 14.8 5.6 20.4 0l36-36 36 36c5.6 5.6 14.8 5.6 20.4 0 5.6-5.6 5.6-14.8 0-20.4l-36-36 36-36c5.6-5.6 5.6-14.8 0-20.4z"/>
+              </svg>
+              <span>选择图片文件<br>点击选择或拖放图片文件到这里<br>支持多个文件</span>
+              <input type="file" id="imageFiles" accept="image/*" multiple>
+            </div>
+            <div class="selected-files"></div>
+          </div>
+        </div>
+
+        <div class="options">
+          <div class="option-group">
+            <label>输出格式：</label>
+            <select id="outputFormat">
+              <option value="image/jpeg">JPG</option>
+              <option value="image/png">PNG</option>
+            </select>
+          </div>
+          <div class="option-group">
+            <label>压缩质量：</label>
+            <input type="range" id="quality" min="1" max="100" value="80">
+            <span id="qualityValue">80%</span>
+          </div>
+        </div>
+
+        <div class="preview-container">
+          <div class="preview-original">
+            <h3>原图预览</h3>
+            <img id="previewOriginal">
+          </div>
+          <div class="preview-converted">
+            <h3>转换预览</h3>
+            <img id="previewConverted">
+          </div>
+        </div>
+
+        <div class="progress">
+          <div class="progress-bar">
+            <div class="progress-bar-fill"></div>
+          </div>
+          <div class="progress-text">正在处理...</div>
+        </div>
+
+        <button onclick="convertImages()">
+          <svg viewBox="0 0 512 512" width="16" height="16" style="fill: currentColor;">
+            <path d="M288 109.3V352c0 17.7-14.3 32-32 32s-32-14.3-32-32V109.3l-73.4 73.4c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l128-128c12.5-12.5 32.8-12.5 45.3 0l128 128c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L288 109.3zM64 352H192c0 35.3 28.7 64 64 64s64-28.7 64-64H448c35.3 0 64 28.7 64 64v32c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V416c0-35.3 28.7-64 64-64zM432 456c13.3 0 24-10.7 24-24s-10.7-24-24-24s-24 10.7-24 24s10.7 24 24 24z"/>
+          </svg>
+          开始转换
+        </button>
+      </div>
+    </div>
+  </div>
+  <script src="./convert.js"></script>
+</body>
+</html>
