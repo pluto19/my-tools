@@ -32,10 +32,21 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+.file-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
 .selected-files {
-  margin-top: 10px;
-  max-height: 200px;
+  margin-top: 5px;
+  max-height: 150px;
   overflow-y: auto;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 5px;
+  background: #fff;
 }
 
 .selected-file {
@@ -87,6 +98,13 @@
 #qualityValue {
   min-width: 50px;
   text-align: right;
+  margin-right: 8px;
+}
+
+.quality-hint {
+  color: #6c757d;
+  font-size: 0.9em;
+  white-space: nowrap;
 }
 
 .drag-over {

@@ -33,9 +33,9 @@
   </div>
   <div class="container">
     <h1>图片格式转换工具</h1>
-    <div class="panels-container">
+    <div class="panels-container compact">
       <div class="left-panel">
-        <div class="description">
+        <div class="description compact">
           <p>支持的图片格式：</p>
           <ul>
             <li>输入格式：HEIC、JPG、PNG、WEBP、BMP等</li>
@@ -46,7 +46,6 @@
             <li>批量转换：支持同时转换多个文件</li>
             <li>压缩控制：可调节输出图片的质量</li>
             <li>本地处理：完全在浏览器中进行，保护隐私</li>
-            <li>预览功能：转换前后对比预览</li>
           </ul>
           <p class="note">浏览器本地运行，文件安全</p>
           <p>使用场景：</p>
@@ -58,17 +57,19 @@
         </div>
       </div>
 
-      <div class="right-panel">
-        <div class="file-inputs-container">
+      <div class="right-panel compact">
+        <div class="file-inputs-container compact">
           <div class="file-input" id="file-input-images">
-            <div class="drop-zone">
-              <svg viewBox="0 0 384 512" width="28" height="28" style="fill: #0d6efd; margin-bottom: 0.5rem; filter: drop-shadow(0 2px 2px rgba(13, 110, 253, 0.2));">
-                <path d="M384 121.9v6.1H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9zM248 160h136v328c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V24C0 10.7 10.7 0 24 0h200v136c0 13.2 10.8 24 24 24zm-84.1 66.3c-5.6-5.6-14.8-5.6-20.4 0l-36 36-36-36c-5.6-5.6-14.8-5.6-20.4 0s-5.6 14.8 0 20.4l36 36-36 36c-5.6 5.6-5.6 14.8 0 20.4 5.6 5.6 14.8 5.6 20.4 0l36-36 36 36c5.6 5.6 14.8 5.6 20.4 0 5.6-5.6 5.6-14.8 0-20.4l-36-36 36-36c5.6-5.6 5.6-14.8 0-20.4z"/>
-              </svg>
-              <span>选择图片文件<br>点击选择或拖放图片文件到这里<br>支持多个文件</span>
-              <input type="file" id="imageFiles" accept="image/*" multiple>
+            <div class="file-selection">
+              <div class="drop-zone">
+                <svg viewBox="0 0 384 512" width="28" height="28" style="fill: #0d6efd; margin-bottom: 0.5rem; filter: drop-shadow(0 2px 2px rgba(13, 110, 253, 0.2));">
+                  <path d="M384 121.9v6.1H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9zM248 160h136v328c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V24C0 10.7 10.7 0 24 0h200v136c0 13.2 10.8 24 24 24zm-84.1 66.3c-5.6-5.6-14.8-5.6-20.4 0l-36 36-36-36c-5.6-5.6-14.8-5.6-20.4 0s-5.6 14.8 0 20.4l36 36-36 36c-5.6 5.6-5.6 14.8 0 20.4 5.6 5.6 14.8 5.6 20.4 0l36-36 36 36c5.6 5.6 14.8 5.6 20.4 0 5.6-5.6 5.6-14.8 0-20.4l-36-36 36-36c5.6-5.6 5.6-14.8 0-20.4z"/>
+                </svg>
+                <span>选择图片文件<br>点击选择或拖放图片文件到这里<br>支持多个文件</span>
+                <input type="file" id="imageFiles" accept="image/*" multiple>
+              </div>
+              <div class="selected-files"></div>
             </div>
-            <div class="selected-files"></div>
           </div>
         </div>
 
@@ -81,20 +82,10 @@
             </select>
           </div>
           <div class="option-group">
-            <label>压缩质量：</label>
+            <label>图片质量：</label>
             <input type="range" id="quality" min="1" max="100" value="80">
             <span id="qualityValue">80%</span>
-          </div>
-        </div>
-
-        <div class="preview-container">
-          <div class="preview-original">
-            <h3>原图预览</h3>
-            <img id="previewOriginal">
-          </div>
-          <div class="preview-converted">
-            <h3>转换预览</h3>
-            <img id="previewConverted">
+            <span class="quality-hint">(数值越大质量越好，文件越大)</span>
           </div>
         </div>
 

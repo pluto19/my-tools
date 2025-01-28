@@ -40,6 +40,14 @@ document.addEventListener('DOMContentLoaded', () => {
     selectedFiles = Array.from(files);
     selectedFilesDiv.innerHTML = '';
     
+    // 更新文件选择区域的显示文本
+    const dropZoneSpan = dropZone.querySelector('span');
+    if (files.length > 0) {
+      dropZoneSpan.innerHTML = `已选择 ${files.length} 个文件<br>点击这里或拖放文件以添加更多`;
+    } else {
+      dropZoneSpan.innerHTML = '选择图片文件<br>点击选择或拖放图片文件到这里<br>支持多个文件';
+    }
+    
     selectedFiles.forEach((file, index) => {
       const fileDiv = document.createElement('div');
       fileDiv.className = 'selected-file';
@@ -64,6 +72,14 @@ function removeFile(index) {
   selectedFiles.splice(index, 1);
   document.querySelector('.selected-files').children[index].remove();
   
+  // 更新文件选择区域的显示文本
+  const dropZoneSpan = document.querySelector('.drop-zone span');
+  if (selectedFiles.length > 0) {
+    dropZoneSpan.innerHTML = `已选择 ${selectedFiles.length} 个文件<br>点击这里或拖放文件以添加更多`;
+  } else {
+    dropZoneSpan.innerHTML = '选择图片文件<br>点击选择或拖放图片文件到这里<br>支持多个文件';
+  }
+
   // 更新预览
   if (selectedFiles.length > 0) {
     showPreview(selectedFiles[0]);
