@@ -220,3 +220,31 @@ function showAlert(type, message) {
     alertBox.remove();
   }, 5000);
 }
+
+// PWA支持
+let deferredPrompt;
+
+// 注册Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(registration => {
+        console.log('ServiceWorker注册成功:', registration.scope);
+      })
+      .catch(error => {
+        console.log('ServiceWorker注册失败:', error);
+      });
+  });
+}
+
+// 处理PWA安装事件
+window.addEventListener('beforeinstallprompt', (e) => {
+  // 存储事件以便浏览器可以触发安装
+  deferredPrompt = e;
+});
+
+// 监听应用安装完成事件
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  showAlert('success', '应用已成功安装！');
+});
