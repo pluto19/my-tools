@@ -21,7 +21,7 @@
       "purpose": "any"
     },
     {
-      "src": "./assets/images/favicon.ico",
+      "src": "./assets/images/favicon-with-background.ico",
       "sizes": "32x32",
       "type": "image/x-icon",
       "purpose": "any"
