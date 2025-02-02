@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>PDF交叉合并工具 - 在线合并身份证正反面PDF文件</title>
-  <meta name="description" content="免费在线PDF交叉合并工具，轻松合并身份证正反面、证件扫描件等PDF文件。支持反向合并、页面旋转、跳过最后一页等功能，完全在浏览器本地运行，保障文件安全。">
+  <meta name="description" content="免费在线PDF交叉合并工具,轻松合并身份证正反面、证件扫描件等PDF文件。支持反向合并、页面旋转、跳过最后一页等功能,完全在浏览器本地运行,保障文件安全。">
   <meta name="keywords" content="PDF合并,PDF交叉合并,正反面PDF合并,身份证正反面合并,身份证PDF合并,证件扫描合并,PDF工具,在线PDF工具,PDF扫描件合并">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#0d6efd">
@@ -11,7 +11,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="PDF合并">
-  <meta name="description" content="免费在线PDF交叉合并工具，轻松合并身份证正反面、证件扫描件等PDF文件。">
+  <meta name="description" content="免费在线PDF交叉合并工具,轻松合并身份证正反面、证件扫描件等PDF文件。">
   <meta name="application-name" content="PDF合并">
   <meta name="msapplication-TileColor" content="#0d6efd">
   <meta name="msapplication-tap-highlight" content="no">
@@ -53,89 +53,69 @@
   <div class="container">
     <h1>PDF交叉合并工具</h1>
     <div class="panels-container">
-      <div class="left-panel">
-        <div class="description">
-        <p>合并扫描文档的正反面：</p>
-        <ul>
-          <li>正面保存为 front.pdf</li>
-          <li>反面保存为 back.pdf</li>
-          <li>反向合并：反面从后向前扫描时使用</li>
-          <li>旋转页面：反面上下颠倒时使用</li>
-          <li>跳过最后一页：当反面文件多出一页时使用</li>
-        </ul>
-        <p class="note">浏览器本地运行，文件安全</p>
-        <p>使用场景：</p>
-        <ul>
-          <li>身份证正反面合并：将身份证正反面扫描件合并为一个PDF文件</li>
-          <li>证件扫描合并：护照、驾驶证等证件的正反面PDF合并</li>
-          <li>正反扫描件合并：将正面和反面扫描的PDF文件合并为一个文件</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="right-panel">
-      <div class="file-inputs-container">
-        <div class="file-input" id="file-input-1">
-          <div class="drop-zone">
-            <svg viewBox="0 0 384 512" width="28" height="28" style="fill: #0d6efd; margin-bottom: 0.5rem; filter: drop-shadow(0 2px 2px rgba(13, 110, 253, 0.2));">
-              <path d="M369.9 97.9L286 14C277 5 264.8-.1 252.1-.1H48C21.5 0 0 21.5 0 48v416c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V131.9c0-12.7-5.1-25-14.1-34zM332.1 128H256V51.9l76.1 76.1zM48 464V48h160v104c0 13.3 10.7 24 24 24h104v288H48z"/>
-            </svg>
-            <span>选择正面PDF文件 (例如身份证正面)<br>点击选择或拖放PDF文件到这里</span>
-            <input type="file" id="file1" accept="application/pdf">
+      <div class="main-panel">
+        <div class="file-inputs-container">
+          <div class="file-input" id="file-input-1">
+            <div class="drop-zone">
+              <svg viewBox="0 0 384 512" width="28" height="28" style="fill: #0d6efd; margin-bottom: 0.5rem; filter: drop-shadow(0 2px 2px rgba(13, 110, 253, 0.2));">
+                <path d="M369.9 97.9L286 14C277 5 264.8-.1 252.1-.1H48C21.5 0 0 21.5 0 48v416c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V131.9c0-12.7-5.1-25-14.1-34zM332.1 128H256V51.9l76.1 76.1zM48 464V48h160v104c0 13.3 10.7 24 24 24h104v288H48z"/>
+              </svg>
+              <span>选择正面PDF文件 (例如身份证正面)<br>点击选择或拖放PDF文件到这里</span>
+              <input type="file" id="file1" accept="application/pdf">
+            </div>
+            <div class="selected-file"></div>
           </div>
-          <div class="selected-file"></div>
-        </div>
 
-        <div class="file-input" id="file-input-2">
-          <div class="drop-zone">
-            <svg viewBox="0 0 384 512" width="28" height="28" style="fill: #0d6efd; margin-bottom: 0.5rem; filter: drop-shadow(0 2px 2px rgba(13, 110, 253, 0.2));">
-              <path d="M369.9 97.9L286 14C277 5 264.8-.1 252.1-.1H48C21.5 0 0 21.5 0 48v416c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V131.9c0-12.7-5.1-25-14.1-34zM332.1 128H256V51.9l76.1 76.1zM48 464V48h160v104c0 13.3 10.7 24 24 24h104v288H48z"/>
-            </svg>
-            <span>选择反面PDF文件 (例如身份证反面)<br>点击选择或拖放PDF文件到这里</span>
-            <input type="file" id="file2" accept="application/pdf">
+          <div class="file-input" id="file-input-2">
+            <div class="drop-zone">
+              <svg viewBox="0 0 384 512" width="28" height="28" style="fill: #0d6efd; margin-bottom: 0.5rem; filter: drop-shadow(0 2px 2px rgba(13, 110, 253, 0.2));">
+                <path d="M369.9 97.9L286 14C277 5 264.8-.1 252.1-.1H48C21.5 0 0 21.5 0 48v416c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V131.9c0-12.7-5.1-25-14.1-34zM332.1 128H256V51.9l76.1 76.1zM48 464V48h160v104c0 13.3 10.7 24 24 24h104v288H48z"/>
+              </svg>
+              <span>选择反面PDF文件 (例如身份证反面)<br>点击选择或拖放PDF文件到这里</span>
+              <input type="file" id="file2" accept="application/pdf">
+            </div>
+            <div class="selected-file"></div>
           </div>
-          <div class="selected-file"></div>
         </div>
-      </div>
 
-      <div class="options">
-        <div class="option-group">
-          <label>
-            <input type="checkbox" id="reverseB">
-            反向合并反面PDF
-          </label>
-          <div class="tooltip">当反面PDF是从后向前扫描时使用此选项，确保页面顺序正确</div>
+        <div class="options">
+          <div class="option-group">
+            <label>
+              <input type="checkbox" id="reverseB">
+              反向合并反面PDF
+            </label>
+            <div class="tooltip">当反面PDF是从后向前扫描时使用此选项,确保页面顺序正确</div>
+          </div>
+          <div class="option-group">
+            <label>
+              <input type="checkbox" id="rotateB">
+              旋转180度反面PDF的页面
+            </label>
+            <div class="tooltip">当反面PDF页面上下颠倒时使用此选项,自动旋转页面到正确方向</div>
+          </div>
+          <div class="option-group">
+            <label>
+              <input type="checkbox" id="skipLastB">
+              跳过反面文件的最后一页
+            </label>
+            <div class="tooltip">当反面PDF比正面多出一页时使用此选项,自动跳过多余的最后一页</div>
+          </div>
         </div>
-        <div class="option-group">
-          <label>
-            <input type="checkbox" id="rotateB">
-            旋转180度反面PDF的页面
-          </label>
-          <div class="tooltip">当反面PDF页面上下颠倒时使用此选项，自动旋转页面到正确方向</div>
-        </div>
-        <div class="option-group">
-          <label>
-            <input type="checkbox" id="skipLastB">
-            跳过反面文件的最后一页
-          </label>
-          <div class="tooltip">当反面PDF比正面多出一页时使用此选项，自动跳过多余的最后一页</div>
-        </div>
-      </div>
 
-      <div class="progress">
-        <div class="progress-bar">
-          <div class="progress-bar-fill"></div>
+        <div class="progress">
+          <div class="progress-bar">
+            <div class="progress-bar-fill"></div>
+          </div>
+          <div class="progress-text">正在处理...</div>
         </div>
-        <div class="progress-text">正在处理...</div>
-      </div>
 
-      <button onclick="mergePdfs()">
-        <svg viewBox="0 0 512 512" width="16" height="16" style="fill: currentColor;">
-          <path d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V304H176c-35.3 0-64 28.7-64 64V512H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128zM176 352h32c30.9 0 56 25.1 56 56s-25.1 56-56 56H192v32c0 8.8-7.2 16-16 16s-16-7.2-16-16V368c0-8.8 7.2-16 16-16zm32 80c13.3 0 24-10.7 24-24s-10.7-24-24-24H192v48h16zm96-80h32c26.5 0 48 21.5 48 48v64c0 26.5-21.5 48-48 48H304c-8.8 0-16-7.2-16-16V368c0-8.8 7.2-16 16-16zm32 128c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H320v96h16zm80-112c0-8.8 7.2-16 16-16h48c8.8 0 16 7.2 16 16s-7.2 16-16 16H448v32h32c8.8 0 16 7.2 16 16s-7.2 16-16 16H448v48c0 8.8-7.2 16-16 16s-16-7.2-16-16V368z"/>
-        </svg>
-        合并PDF
-      </button>
-    </div>
+        <button onclick="mergePdfs()">
+          <svg viewBox="0 0 512 512" width="16" height="16" style="fill: currentColor;">
+            <path d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V304H176c-35.3 0-64 28.7-64 64V512H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128zM176 352h32c30.9 0 56 25.1 56 56s-25.1 56-56 56H192v32c0 8.8-7.2 16-16 16s-16-7.2-16-16V368c0-8.8 7.2-16 16-16zm32 80c13.3 0 24-10.7 24-24s-10.7-24-24-24H192v48h16zm96-80h32c26.5 0 48 21.5 48 48v64c0 26.5-21.5 48-48 48H304c-8.8 0-16-7.2-16-16V368c0-8.8 7.2-16 16-16zm32 128c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H320v96h16zm80-112c0-8.8 7.2-16 16-16h48c8.8 0 16 7.2 16 16s-7.2 16-16 16H448v32h32c8.8 0 16 7.2 16 16s-7.2 16-16 16H448v48c0 8.8-7.2 16-16 16s-16-7.2-16-16V368z"/>
+          </svg>
+          合并PDF
+        </button>
+      </div>
     </div>
   </div>
   <div class="beian">

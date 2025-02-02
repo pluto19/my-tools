@@ -35,38 +35,26 @@
       </div>
     </div>
   </div>
-  <div class="container">
+  <div class="container background-tool">
     <h1>图片背景色工具</h1>
     <div class="panels-container">
-      <div class="left-panel">
-        <div class="description">
-          <p>功能说明:</p>
-          <ul>
-            <li>支持带透明背景的图片</li>
-            <li>可自定义背景色</li>
-            <li>实时预览效果</li>
-          </ul>
-          <p>使用步骤:</p>
-          <ul>
-            <li>上传图片文件</li>
-            <li>选择背景色</li>
-            <li>下载处理后的图片</li>
-          </ul>
-          <p class="note">浏览器本地运行,文件安全</p>
-        </div>
-      </div>
-
-      <div class="right-panel">
-        <div class="file-inputs-container">
-          <div class="file-input" id="file-input-image">
-            <div class="drop-zone">
-              <svg viewBox="0 0 512 512" width="28" height="28" style="fill: #0d6efd; margin-bottom: 0.5rem; filter: drop-shadow(0 2px 2px rgba(13, 110, 253, 0.2));">
-                <path d="M448 80c8.8 0 16 7.2 16 16V415.8l-5-6.5-136-176c-4.5-5.9-11.6-9.3-19-9.3s-14.4 3.4-19 9.3L202 340.7l-30.5-42.7C167 291.7 159.8 288 152 288s-15 3.7-19.5 10.1l-80 112L48 416.3l0-.3V96c0-8.8 7.2-16 16-16H448zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm80 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z"/>
-              </svg>
-              <span>选择图片文件<br>点击选择或拖放图片文件到这里</span>
-              <input type="file" id="imageFile" accept="image/*">
+      <div class="main-panel">
+        <div class="main-content">
+          <div class="file-inputs-container">
+            <div class="file-input" id="file-input-image">
+              <div class="drop-zone">
+                <svg viewBox="0 0 512 512" width="28" height="28" style="fill: #0d6efd; margin-bottom: 0.5rem; filter: drop-shadow(0 2px 2px rgba(13, 110, 253, 0.2));">
+                  <path d="M448 80c8.8 0 16 7.2 16 16V415.8l-5-6.5-136-176c-4.5-5.9-11.6-9.3-19-9.3s-14.4 3.4-19 9.3L202 340.7l-30.5-42.7C167 291.7 159.8 288 152 288s-15 3.7-19.5 10.1l-80 112L48 416.3l0-.3V96c0-8.8 7.2-16 16-16H448zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm80 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z"/>
+                </svg>
+                <span>选择图片文件<br>点击选择或拖放图片文件到这里</span>
+                <input type="file" id="imageFile" accept="image/*">
+              </div>
+              <div class="selected-file"></div>
             </div>
-            <div class="selected-file"></div>
+          </div>
+
+          <div class="preview-container">
+            <canvas id="previewCanvas"></canvas>
           </div>
         </div>
 
@@ -76,10 +64,6 @@
             <input type="color" id="backgroundColor" value="#ffffff">
             <span id="colorValue">#FFFFFF</span>
           </div>
-        </div>
-
-        <div class="preview-container">
-          <canvas id="previewCanvas"></canvas>
         </div>
 
         <div class="progress">
