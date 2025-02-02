@@ -107,6 +107,55 @@ function updateCanvas() {
   }
 }
 
+// 创建ICO文件
+async function createIcoFile(pngBlob) {
+  // 获取PNG数据
+  const pngArrayBuffer = await pngBlob.arrayBuffer();
+  const pngData = new Uint8Array(pngArrayBuffer);
+
+  // 创建ICO文件头
+  const header = new Uint8Array(6);
+  header.set([0, 0]); // 保留字段,必须为0
+  header.set([1, 0], 2); // 图像类型,1表示ICO
+  header.set([1, 0], 4); // 图像数量
+
+  // 创建目录条目
+  const entry = new Uint8Array(16);
+  const width = canvas.width > 255 ? 0 : canvas.width;
+  const height = canvas.height > 255 ? 0 : canvas.height;
+  
+  entry[0] = width; // 宽度
+  entry[1] = height; // 高度
+  entry[2] = 0; // 调色板颜色数
+  entry[3] = 0; // 保留字段
+  entry[4] = 1; // 色彩平面数
+  entry[5] = 0;
+  entry[6] = 32; // 位深度
+  entry[7] = 0;
+  
+  // 图像大小(4字节)
+  const size = pngData.length;
+  entry[8] = size & 0xFF;
+  entry[9] = (size >> 8) & 0xFF;
+  entry[10] = (size >> 16) & 0xFF;
+  entry[11] = (size >> 24) & 0xFF;
+  
+  // 图像数据偏移量(4字节)
+  const offset = header.length + entry.length;
+  entry[12] = offset & 0xFF;
+  entry[13] = (offset >> 8) & 0xFF;
+  entry[14] = (offset >> 16) & 0xFF;
+  entry[15] = (offset >> 24) & 0xFF;
+
+  // 合并所有部分
+  const icoData = new Uint8Array(header.length + entry.length + pngData.length);
+  icoData.set(header, 0);
+  icoData.set(entry, header.length);
+  icoData.set(pngData, header.length + entry.length);
+
+  return new Blob([icoData], { type: 'image/x-icon' });
+}
+
 // 下载处理后的图片
 async function downloadImage() {
   if (!currentImage) {
@@ -118,32 +167,47 @@ async function downloadImage() {
   const fileExtension = originalFileName.split('.').pop().toLowerCase();
   const baseName = originalFileName.split('.')[0];
 
-  // 先将图片转为PNG格式(带背景色)
-  const pngDataUrl = canvas.toDataURL('image/png');
-
   try {
-    // 如果是ico文件,提示用户将使用PNG格式
-    if (fileExtension === 'ico') {
-      alert('ICO格式将转换为PNG格式保存,以确保最佳的背景色效果');
-      const link = document.createElement('a');
-      link.href = pngDataUrl;
-      link.download = `${baseName}-with-background.png`;
-      link.click();
-    } else {
-      // 其他格式直接使用对应的MIME类型
-      const link = document.createElement('a');
+    // 显示进度条
+    document.querySelector('.progress').style.display = 'block';
+
+    // 先将图片转为PNG格式(带背景色)
+    const pngBlob = await new Promise(resolve => {
+      canvas.toBlob(resolve, 'image/png');
+    });
+
+    let finalBlob;
+    let finalExtension;
+
+    // 如果原始文件是ICO或目标格式是ICO
+    if (fileExtension === 'ico' || confirm('是否需要转换为ICO格式?')) {
       try {
-        const mimeType = `image/${fileExtension}`;
-        link.href = canvas.toDataURL(mimeType);
-      } catch (e) {
-        console.warn(`不支持导出为${fileExtension}格式,使用PNG格式`);
-        link.href = pngDataUrl;
+        finalBlob = await createIcoFile(pngBlob);
+        finalExtension = 'ico';
+      } catch (error) {
+        console.error('ICO转换失败:', error);
+        alert('ICO转换失败,将使用PNG格式');
+        finalBlob = pngBlob;
+        finalExtension = 'png';
       }
-      link.download = `${baseName}-with-background.${fileExtension}`;
-      link.click();
+    } else {
+      finalBlob = pngBlob;
+      finalExtension = fileExtension === 'ico' ? 'png' : fileExtension;
     }
+
+    // 创建下载链接
+    const url = URL.createObjectURL(finalBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${baseName}-with-background.${finalExtension}`;
+    link.click();
+
+    // 清理
+    URL.revokeObjectURL(url);
+    document.querySelector('.progress').style.display = 'none';
   } catch (e) {
     console.error('保存文件失败:', e);
     alert('保存文件失败,请重试');
+    document.querySelector('.progress').style.display = 'none';
   }
 }
