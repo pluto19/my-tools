@@ -46,14 +46,49 @@
             padding: 10px 20px;
             border-radius: 4px;
             cursor: pointer;
+            margin: 5px;
         }
         button:disabled {
             background-color: #ccc;
         }
         input[type="text"] {
             padding: 8px;
-            margin: 5px 0;
+            margin: 5px;
             width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .download-link {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .download-link:hover {
+            background-color: #45a049;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .status.error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+        .status.success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+        .status.info {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #bbdefb;
         }
     </style>
 </head>
@@ -109,6 +144,17 @@
                 <div class="progress-bar"></div>
             </div>
             <div id="downloadOutput"></div>
+        </div>
+
+        <div class="info-section">
+            <h3>使用说明</h3>
+            <ol>
+                <li>发送方:选择要传输的文件,点击"生成取件码"</li>
+                <li>将生成的取件码发送给接收方</li>
+                <li>接收方:输入取件码,点击"接收文件"</li>
+                <li>等待文件传输完成后下载</li>
+            </ol>
+            <p><strong>注意:</strong>传输过程中请勿关闭页面,建议使用Chrome、Firefox、Edge等现代浏览器。</p>
         </div>
     </div>
 
