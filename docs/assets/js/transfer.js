@@ -169,7 +169,49 @@ async function receiveFile() {
     });
 }
 
+// 处理文件选择和拖放
+function handleFileSelect(file) {
+    if (!file) return;
+    const fileInput = document.getElementById('fileInput');
+    const fileInputContainer = fileInput.closest('.file-input');
+    const selectedFile = fileInputContainer.querySelector('.selected-file');
+    
+    // 设置文件和显示文件名
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    fileInput.files = dataTransfer.files;
+    selectedFile.textContent = file.name;
+    fileInputContainer.classList.add('has-file');
+}
+
 // 初始化
 document.addEventListener('DOMContentLoaded', () => {
     initPeer();
+    
+    // 文件选择处理
+    const fileInput = document.getElementById('fileInput');
+    const dropZone = fileInput.closest('.drop-zone');
+    const fileInputContainer = fileInput.closest('.file-input');
+    
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        handleFileSelect(file);
+    });
+    
+    // 拖放处理
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        fileInputContainer.classList.add('dragover');
+    });
+    
+    dropZone.addEventListener('dragleave', () => {
+        fileInputContainer.classList.remove('dragover');
+    });
+    
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileInputContainer.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        handleFileSelect(file);
+    });
 });
