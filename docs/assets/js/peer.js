@@ -26,37 +26,86 @@ let connectionTimer = null;
 let retryCount = 0;
 const MAX_RETRIES = 3;
 
-// PeerJS服务器配置
-const PEER_SERVER_CONFIG = {
-    // 使用0.peerjs.com服务器
-    host: '0.peerjs.com',
-    port: 443,
-    secure: true,
-    path: '/',
-    // 备用服务器列表
-    alternateHosts: [
-        '0.peerjs.com',
-        'peer.metered.ca',
-        'peer.nodewebkit.org'
-    ],
-    currentHostIndex: 0
+// 诊断信息
+let diagnosticInfo = {
+    browserSupport: {},
+    networkInfo: {},
+    connectionAttempts: [],
+    iceGatheringState: '',
+    iceConnectionState: '',
+    signalingState: '',
+    lastError: null
 };
 
-// 切换到下一个服务器
-function switchToNextHost() {
-    PEER_SERVER_CONFIG.currentHostIndex = 
-        (PEER_SERVER_CONFIG.currentHostIndex + 1) % PEER_SERVER_CONFIG.alternateHosts.length;
-    PEER_SERVER_CONFIG.host = PEER_SERVER_CONFIG.alternateHosts[PEER_SERVER_CONFIG.currentHostIndex];
-    console.log('切换到服务器:', PEER_SERVER_CONFIG.host);
+// 检查浏览器支持
+function checkBrowserSupport() {
+    diagnosticInfo.browserSupport = {
+        webrtc: !!window.RTCPeerConnection,
+        websocket: !!window.WebSocket,
+        userAgent: navigator.userAgent,
+        platform: navigator.platform
+    };
+    return diagnosticInfo.browserSupport.webrtc && diagnosticInfo.browserSupport.websocket;
+}
+
+// 检查网络状态
+async function checkNetworkStatus() {
+    try {
+        // 检查网络连接类型
+        diagnosticInfo.networkInfo.online = navigator.onLine;
+        
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (connection) {
+            diagnosticInfo.networkInfo = {
+                ...diagnosticInfo.networkInfo,
+                type: connection.type || '未知',
+                effectiveType: connection.effectiveType || '未知',
+                downlink: connection.downlink || '未知',
+                rtt: connection.rtt || '未知'
+            };
+        }
+
+        // 测试STUN服务器连通性
+        const stunTests = ICE_SERVERS.filter(server => 
+            typeof server.urls === 'string' && server.urls.startsWith('stun:')
+        ).map(async server => {
+            try {
+                const pc = new RTCPeerConnection({ iceServers: [server] });
+                const dc = pc.createDataChannel('test');
+                await pc.createOffer();
+                diagnosticInfo.networkInfo[server.urls] = '可用';
+                pc.close();
+                return true;
+            } catch (e) {
+                diagnosticInfo.networkInfo[server.urls] = '不可用';
+                return false;
+            }
+        });
+
+        await Promise.all(stunTests);
+    } catch (e) {
+        console.error('网络状态检查部分失败:', e);
+        diagnosticInfo.networkInfo.error = e.message;
+    } finally {
+        showDiagnosticInfo();
+    }
 }
 
 // 初始化PeerJS
-function initPeer() {
+async function initPeer() {
+    // 运行诊断
+    if (!checkBrowserSupport()) {
+        showError('您的浏览器不支持WebRTC,请使用Chrome/Firefox/Edge等现代浏览器');
+        return;
+    }
+    
+    // 异步检查网络,不阻塞初始化
+    checkNetworkStatus().catch(console.error);
+
     peer = new Peer(generateRandomId(), {
-        host: PEER_SERVER_CONFIG.host,
-        port: PEER_SERVER_CONFIG.port,
-        path: PEER_SERVER_CONFIG.path,
-        secure: PEER_SERVER_CONFIG.secure,
+        host: '0.peerjs.com',
+        port: 443,
+        secure: true,
         config: {
             'iceServers': ICE_SERVERS,
             'iceTransportPolicy': 'all',
@@ -64,14 +113,7 @@ function initPeer() {
             'rtcpMuxPolicy': 'require',
             'iceCandidatePoolSize': 10
         },
-        debug: 2,
-        pingInterval: 2000,
-        // 重试配置
-        retries: 3,
-        retryDelay: 1000,
-        // 连接配置
-        connectionTimeout: 10000,
-        requestTimeout: 10000
+        debug: 2
     });
 
     peer.on('error', handlePeerError);
@@ -79,52 +121,27 @@ function initPeer() {
     peer.on('open', (id) => {
         console.log('已连接到PeerJS服务器, ID:', id);
         showStatus('准备就绪', 'success');
-        retryCount = 0; // 重置重试计数
+        diagnosticInfo.connectionAttempts.push({
+            timestamp: new Date().toISOString(),
+            event: 'connected',
+            peerId: id
+        });
+        showDiagnosticInfo();
     });
 
+    // 监控连接状态
     peer.on('disconnected', () => {
-        console.log('与PeerJS服务器断开连接');
-        showStatus('连接断开,正在重连...', 'info');
-        setTimeout(() => {
-            peer.reconnect();
-        }, 1000);
-    });
-
-    peer.on('close', () => {
-        console.log('连接已关闭');
-        showStatus('连接已关闭', 'error');
+        diagnosticInfo.connectionAttempts.push({
+            timestamp: new Date().toISOString(),
+            event: 'disconnected'
+        });
+        showDiagnosticInfo();
     });
 }
 
 // 生成随机ID (取件码)
 function generateRandomId() {
     return Math.random().toString(36).substr(2, 6).toUpperCase();
-}
-
-// 创建新的发送端Peer
-function createSenderPeer(peerId) {
-    const newPeer = new Peer(peerId, {
-        host: PEER_SERVER_CONFIG.host,
-        port: PEER_SERVER_CONFIG.port,
-        path: PEER_SERVER_CONFIG.path,
-        secure: PEER_SERVER_CONFIG.secure,
-        config: {
-            'iceServers': ICE_SERVERS,
-            'iceTransportPolicy': 'all',
-            'bundlePolicy': 'max-bundle',
-            'rtcpMuxPolicy': 'require',
-            'iceCandidatePoolSize': 10
-        },
-        debug: 2,
-        pingInterval: 2000,
-        retries: 3,
-        retryDelay: 1000,
-        connectionTimeout: 10000,
-        requestTimeout: 10000
-    });
-
-    newPeer.on('error', handlePeerError);
-    return newPeer;
 }
 
 // 连接到发送端
@@ -135,6 +152,11 @@ function connectToPeer(code) {
     }
 
     showStatus('正在尝试连接...', 'info');
+    diagnosticInfo.connectionAttempts.push({
+        timestamp: new Date().toISOString(),
+        event: 'connecting',
+        targetPeerId: code
+    });
     
     if (connectionTimer) {
         clearTimeout(connectionTimer);
@@ -143,77 +165,116 @@ function connectToPeer(code) {
     connectionTimer = setTimeout(() => {
         if (retryCount < MAX_RETRIES) {
             retryCount++;
-            showStatus(`连接超时,正在切换服务器重试(${retryCount}/${MAX_RETRIES})...`, 'info');
+            showStatus(`连接超时,正在重试(${retryCount}/${MAX_RETRIES})...`, 'info');
+            diagnosticInfo.connectionAttempts.push({
+                timestamp: new Date().toISOString(),
+                event: 'timeout_retry',
+                attempt: retryCount
+            });
             if (peer) {
                 peer.destroy();
             }
-            switchToNextHost();
             initPeer();
             setTimeout(() => {
                 connectToPeer(code);
             }, 1000);
         } else {
-            showError('多次连接失败,请检查网络设置或稍后重试');
+            showError('多次连接失败,请查看诊断信息');
             retryCount = 0;
             if (peer) {
                 peer.destroy();
                 initPeer();
             }
         }
+        showDiagnosticInfo();
     }, CONNECTION_TIMEOUT);
 
     const conn = peer.connect(code, {
         reliable: true,
-        serialization: 'binary',
-        metadata: {
-            retry: retryCount
-        }
+        serialization: 'binary'
     });
+
+    // 监控连接状态
+    if (conn._pc) {
+        conn._pc.oniceconnectionstatechange = () => {
+            diagnosticInfo.iceConnectionState = conn._pc.iceConnectionState;
+            diagnosticInfo.iceGatheringState = conn._pc.iceGatheringState;
+            diagnosticInfo.signalingState = conn._pc.signalingState;
+            
+            diagnosticInfo.connectionAttempts.push({
+                timestamp: new Date().toISOString(),
+                event: 'ice_state_change',
+                state: conn._pc.iceConnectionState
+            });
+            
+            showDiagnosticInfo();
+        };
+    }
 
     conn.on('open', () => {
         clearTimeout(connectionTimer);
         retryCount = 0;
         showStatus('连接成功', 'success');
+        diagnosticInfo.connectionAttempts.push({
+            timestamp: new Date().toISOString(),
+            event: 'connection_established'
+        });
+        showDiagnosticInfo();
     });
 
     conn.on('error', (err) => {
         clearTimeout(connectionTimer);
-        console.error('连接错误:', err);
-        if (retryCount < MAX_RETRIES) {
-            retryCount++;
-            showStatus(`连接错误,正在重试(${retryCount}/${MAX_RETRIES})...`, 'info');
-            setTimeout(() => {
-                connectToPeer(code);
-            }, 1000);
-        } else {
-            showError('连接失败: ' + err.message);
-        }
-    });
-
-    conn.on('close', () => {
-        clearTimeout(connectionTimer);
-        showError('连接已断开');
+        diagnosticInfo.lastError = err;
+        diagnosticInfo.connectionAttempts.push({
+            timestamp: new Date().toISOString(),
+            event: 'error',
+            error: err.message
+        });
+        showDiagnosticInfo();
+        showError('连接错误: ' + err.message);
     });
 
     return conn;
 }
 
-// 监听连接
-function onPeerConnection(callback) {
-    if (!peer) {
-        showError('连接未初始化');
-        return;
-    }
-    peer.on('connection', (conn) => {
-        showStatus('接收方已连接', 'success');
-        callback(conn);
-    });
+// 显示诊断信息
+function showDiagnosticInfo() {
+    const diagnosticOutput = document.getElementById('diagnosticOutput');
+    if (!diagnosticOutput) return;
+
+    const info = `
+        <div class="diagnostic-info">
+            <h3>连接诊断信息</h3>
+            <p><strong>网络状态:</strong> ${diagnosticInfo.networkInfo.online ? '在线' : '离线'}</p>
+            <p><strong>网络类型:</strong> ${diagnosticInfo.networkInfo.type || '未知'}</p>
+            <p><strong>网络质量:</strong> ${diagnosticInfo.networkInfo.effectiveType || '未知'}</p>
+            <p><strong>浏览器:</strong> ${diagnosticInfo.browserSupport.userAgent}</p>
+            <p><strong>WebRTC支持:</strong> ${diagnosticInfo.browserSupport.webrtc ? '✓' : '✗'}</p>
+            <p><strong>ICE连接状态:</strong> ${diagnosticInfo.iceConnectionState || '未连接'}</p>
+            <p><strong>ICE收集状态:</strong> ${diagnosticInfo.iceGatheringState || '未开始'}</p>
+            ${diagnosticInfo.lastError ? `<p><strong>最后错误:</strong> ${diagnosticInfo.lastError.message}</p>` : ''}
+            <div class="connection-log">
+                <strong>最近连接日志:</strong>
+                <pre>${JSON.stringify(diagnosticInfo.connectionAttempts.slice(-5), null, 2)}</pre>
+            </div>
+        </div>
+    `;
+    
+    diagnosticOutput.innerHTML = info;
 }
 
 // 处理PeerJS错误
 function handlePeerError(err) {
     console.error('PeerJS错误:', err);
     clearTimeout(connectionTimer);
+    
+    diagnosticInfo.lastError = err;
+    diagnosticInfo.connectionAttempts.push({
+        timestamp: new Date().toISOString(),
+        event: 'peer_error',
+        type: err.type,
+        message: err.message
+    });
     
     let errorMsg = '连接错误';
     switch(err.type) {
@@ -231,16 +292,10 @@ function handlePeerError(err) {
             }
             break;
         case 'network':
-            errorMsg = '网络连接错误,正在切换服务器...';
-            if (retryCount < MAX_RETRIES) {
-                switchToNextHost();
-                initPeer();
-            }
+            errorMsg = '网络连接错误,请检查网络设置';
             break;
         case 'server-error':
-            errorMsg = '服务器错误,正在切换备用服务器...';
-            switchToNextHost();
-            initPeer();
+            errorMsg = '服务器错误,请稍后重试';
             break;
         case 'browser-incompatible':
             errorMsg = '浏览器不支持WebRTC,请使用Chrome/Firefox/Edge等现代浏览器';
@@ -248,6 +303,7 @@ function handlePeerError(err) {
     }
     
     showError(errorMsg);
+    showDiagnosticInfo();
 }
 
 // 显示错误信息
