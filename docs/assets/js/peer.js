@@ -144,7 +144,7 @@ async function initPeer() {
 
 // 生成随机ID (取件码)
 function generateRandomId() {
-    return Math.random().toString(36).substr(2, 6).toUpperCase();
+    return Math.floor(Math.random() * 10000).toString().padStart(4, '0');
 }
 
 // 连接到发送端
