@@ -1,24 +1,27 @@
 let peer;
 const ICE_SERVERS = [
-    // 中国的STUN服务器
-    { urls: 'stun:stun.miwifi.com:3478' },
-    { urls: 'stun:stun.qq.com:3478' },
-    { urls: 'stun:stun.chat.bilibili.com:3478' },
-    // Google的STUN服务器
-    { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' },
-    { urls: 'stun2.l.google.com:19302' },
-    // TURN服务器
+    // TURN服务器(优先使用,提高连接成功率)
     {
         urls: [
-            'turn:relay.metered.ca:80?transport=tcp',
+            'turns:relay.metered.ca:443?transport=tcp', // 加密TURN
             'turn:relay.metered.ca:443?transport=tcp',
-            'turn:relay.metered.ca:80?transport=udp',
-            'turn:relay.metered.ca:443?transport=udp'
+            'turn:relay.metered.ca:80?transport=tcp',
+            'turns:relay.metered.ca:443?transport=udp', // 加密TURN
+            'turn:relay.metered.ca:443?transport=udp',
+            'turn:relay.metered.ca:80?transport=udp'
         ],
         username: 'e8c7d8a48cf60f9066d4a17e',
         credential: 'wZWTcesH0L0kGkKh'
-    }
+    },
+    // 中国的STUN服务器(同时支持IPv4和IPv6)
+    { urls: ['stun:stun.miwifi.com:3478', 'stuns:stun.miwifi.com:5349'] },
+    { urls: ['stun:stun.qq.com:3478', 'stuns:stun.qq.com:5349'] },
+    { urls: ['stun:stun.chat.bilibili.com:3478', 'stuns:stun.chat.bilibili.com:5349'] },
+    { urls: 'stun:stun.syncthing.net:3478' }, // Syncthing的STUN(支持IPv6)
+    { urls: 'stun:stun.nextcloud.com:443' },  // Nextcloud的STUN(支持IPv6)
+    // Google的STUN服务器(作为备选)
+    { urls: ['stun:stun.l.google.com:19302', 'stun:stun.l.google.com:19305'] },
+    { urls: ['stun:stun1.l.google.com:19302', 'stun:stun1.l.google.com:19305'] }
 ];
 
 const CONNECTION_TIMEOUT = 20000; // 20秒
