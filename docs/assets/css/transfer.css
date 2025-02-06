@@ -10,10 +10,9 @@ body {
     padding: 5rem 1rem 1.5rem;
 }
 .transfer-container {
-    background: #fff;
     padding: 2rem;
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 2px dashed #ddd;
 }
 .transfer-container + .transfer-container {
     margin-top: 1.5rem;
