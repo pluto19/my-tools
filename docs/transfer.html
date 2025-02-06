@@ -8,16 +8,37 @@
     <meta name="theme-color" content="#0d6efd">
     <link rel="stylesheet" href="assets/css/styles.css">
     <style>
+        * {
+            box-sizing: border-box;
+        }
         .container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 5rem auto 0;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .transfer-wrapper {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+            margin-top: 1.5rem;
         }
         .transfer-container {
+            display: table-cell;
+            width: 50%;
             border: 2px dashed #ccc;
-            padding: 20px;
+            padding: 1.5rem;
             border-radius: 8px;
-            margin-bottom: 20px;
+            vertical-align: top;
+        }
+        #uploadSection {
+            padding-right: 0.75rem;
+        }
+        #downloadSection {
+            padding-left: 0.75rem;
         }
         .code {
             font-size: 24px;
@@ -91,8 +112,8 @@
             border: 1px solid #bbdefb;
         }
         .diagnostic-info {
-            margin-top: 20px;
-            padding: 15px;
+            margin-top: 1.5rem;
+            padding: 1.5rem;
             background-color: #f5f5f5;
             border-radius: 8px;
             font-size: 14px;
@@ -113,6 +134,31 @@
             white-space: pre-wrap;
             font-size: 12px;
         }
+        .info-section {
+            margin-top: 1.5rem;
+        }
+        h1 {
+            margin: 0 0 1.5rem 0;
+            color: #1a1a1a;
+            font-weight: 600;
+            text-align: center;
+            width: 100%;
+        }
+        @media (max-width: 768px) {
+            .transfer-wrapper {
+                display: block;
+            }
+            .transfer-container {
+                display: block;
+                width: 100%;
+                padding: 1.5rem !important;
+                margin-bottom: 1rem;
+            }
+            .container {
+                margin-top: 3.5rem;
+                padding: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -120,24 +166,26 @@
 
     <div class="container">
         <h1>P2P文件传输</h1>
-        <div class="transfer-container" id="uploadSection">
-            <h2>发送文件</h2>
-            <input type="file" id="fileInput">
-            <button onclick="sendFile()" id="sendButton">生成取件码</button>
-            <div id="uploadProgress" class="progress" style="display:none">
-                <div class="progress-bar"></div>
+        <div class="transfer-wrapper">
+            <div class="transfer-container" id="uploadSection">
+                <h2>发送文件</h2>
+                <input type="file" id="fileInput">
+                <button onclick="sendFile()" id="sendButton">生成取件码</button>
+                <div id="uploadProgress" class="progress" style="display:none">
+                    <div class="progress-bar"></div>
+                </div>
+                <div id="codeOutput"></div>
             </div>
-            <div id="codeOutput"></div>
-        </div>
 
-        <div class="transfer-container" id="downloadSection">
-            <h2>接收文件</h2>
-            <input type="text" id="codeInput" placeholder="输入取件码">
-            <button onclick="receiveFile()">接收文件</button>
-            <div id="downloadProgress" class="progress" style="display:none">
-                <div class="progress-bar"></div>
+            <div class="transfer-container" id="downloadSection">
+                <h2>接收文件</h2>
+                <input type="text" id="codeInput" placeholder="输入取件码">
+                <button onclick="receiveFile()">接收文件</button>
+                <div id="downloadProgress" class="progress" style="display:none">
+                    <div class="progress-bar"></div>
+                </div>
+                <div id="downloadOutput"></div>
             </div>
-            <div id="downloadOutput"></div>
         </div>
 
         <div id="diagnosticOutput" class="diagnostic-info"></div>
