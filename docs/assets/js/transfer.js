@@ -29,21 +29,18 @@ async function sendFile() {
         `, 'success');
 
         conn.on('open', () => {
-            // 发送文件信息
             conn.send(JSON.stringify({
                 type: 'file-info',
                 name: file.name,
                 size: file.size
             }));
 
-            // 开始分片传输
             let offset = 0;
             const reader = new FileReader();
             const uploadProgress = document.querySelector('#uploadProgress');
             const progressBar = uploadProgress.querySelector('.progress-bar');
             uploadProgress.style.display = 'block';
 
-            // 设置传输超时
             transferTimer = setTimeout(() => {
                 showError('文件传输超时,请重试');
                 conn.close();
@@ -120,7 +117,6 @@ async function receiveFile() {
     conn.on('data', (data) => {
         try {
             if (typeof data === 'string') {
-                // 接收文件信息
                 fileInfo = JSON.parse(data);
                 currentFileChunks = [];
                 receivedSize = 0;
@@ -130,14 +126,12 @@ async function receiveFile() {
                     <p>正在接收文件...</p>
                 `, 'info');
 
-                // 设置传输超时
                 if (transferTimer) clearTimeout(transferTimer);
                 transferTimer = setTimeout(() => {
                     showError('文件接收超时,请重试');
                     conn.close();
                 }, TRANSFER_TIMEOUT);
             } else {
-                // 接收文件分片
                 currentFileChunks.push(data);
                 receivedSize += data.byteLength;
                 const progress = (receivedSize / fileInfo.size) * 100;
@@ -145,7 +139,6 @@ async function receiveFile() {
 
                 if (receivedSize === fileInfo.size) {
                     clearTimeout(transferTimer);
-                    // 文件接收完成,合并分片
                     const blob = new Blob(currentFileChunks);
                     const url = URL.createObjectURL(blob);
                     showStatus(`
@@ -169,49 +162,25 @@ async function receiveFile() {
     });
 }
 
-// 处理文件选择和拖放
-function handleFileSelect(file) {
-    if (!file) return;
-    const fileInput = document.getElementById('fileInput');
-    const fileInputContainer = fileInput.closest('.file-input');
-    const selectedFile = fileInputContainer.querySelector('.selected-file');
-    
-    // 设置文件和显示文件名
-    const dataTransfer = new DataTransfer();
-    dataTransfer.items.add(file);
-    fileInput.files = dataTransfer.files;
-    selectedFile.textContent = file.name;
-    fileInputContainer.classList.add('has-file');
+// 显示错误信息
+function showError(message) {
+    const uploadOutput = document.getElementById('codeOutput');
+    const downloadOutput = document.getElementById('downloadOutput');
+    const errorHtml = `<div class="status error">${message}</div>`;
+    uploadOutput.innerHTML = errorHtml;
+    downloadOutput.innerHTML = errorHtml;
+}
+
+// 显示状态信息
+function showStatus(message, type = 'info') {
+    const uploadOutput = document.getElementById('codeOutput');
+    const downloadOutput = document.getElementById('downloadOutput');
+    const statusHtml = `<div class="status ${type}">${message}</div>`;
+    uploadOutput.innerHTML = statusHtml;
+    downloadOutput.innerHTML = statusHtml;
 }
 
 // 初始化
 document.addEventListener('DOMContentLoaded', () => {
     initPeer();
-    
-    // 文件选择处理
-    const fileInput = document.getElementById('fileInput');
-    const dropZone = fileInput.closest('.drop-zone');
-    const fileInputContainer = fileInput.closest('.file-input');
-    
-    fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        handleFileSelect(file);
-    });
-    
-    // 拖放处理
-    dropZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        fileInputContainer.classList.add('dragover');
-    });
-    
-    dropZone.addEventListener('dragleave', () => {
-        fileInputContainer.classList.remove('dragover');
-    });
-    
-    dropZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        fileInputContainer.classList.remove('dragover');
-        const file = e.dataTransfer.files[0];
-        handleFileSelect(file);
-    });
 });

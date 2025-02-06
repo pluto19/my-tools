@@ -3,216 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>文件传输 - 在线P2P文件传输工具</title>
-    <meta name="description" content="免费在线P2P文件传输工具,无需服务器即可安全传输文件。使用WebRTC技术,支持大文件传输,保护隐私。">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0d6efd">
-    <link rel="stylesheet" href="assets/css/styles.css">
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 5rem auto 0;
-            padding: 1.5rem;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .transfer-wrapper {
-            display: table;
-            width: 100%;
-            table-layout: fixed;
-            margin-top: 1.5rem;
-        }
-        .transfer-container {
-            display: table-cell;
-            width: 50%;
-            border: 2px dashed #ccc;
-            padding: 1.5rem;
-            border-radius: 8px;
-            vertical-align: top;
-        }
-        #uploadSection {
-            padding-right: 0.75rem;
-        }
-        #downloadSection {
-            padding-left: 0.75rem;
-        }
-        .code {
-            font-size: 24px;
-            font-weight: bold;
-            color: #2196F3;
-            margin: 10px 0;
-        }
-        .progress {
-            width: 100%;
-            height: 20px;
-            background-color: #f0f0f0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        .progress-bar {
-            width: 0%;
-            height: 100%;
-            background-color: #4CAF50;
-            transition: width 0.3s;
-        }
-        button {
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 5px;
-        }
-        button:disabled {
-            background-color: #ccc;
-        }
-        input[type="text"] {
-            padding: 8px;
-            margin: 5px;
-            width: 200px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .download-link {
-            display: inline-block;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            margin-top: 10px;
-        }
-        .download-link:hover {
-            background-color: #45a049;
-        }
-        .status {
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 4px;
-        }
-        .status.error {
-            background-color: #ffebee;
-            color: #c62828;
-            border: 1px solid #ffcdd2;
-        }
-        .status.success {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #c8e6c9;
-        }
-        .status.info {
-            background-color: #e3f2fd;
-            color: #1565c0;
-            border: 1px solid #bbdefb;
-        }
-        .diagnostic-info {
-            margin-top: 1.5rem;
-            padding: 1.5rem;
-            background-color: #f5f5f5;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        .diagnostic-info h3 {
-            margin-top: 0;
-            color: #333;
-        }
-        .connection-log {
-            margin-top: 10px;
-            background-color: #fff;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-        }
-        .connection-log pre {
-            margin: 0;
-            white-space: pre-wrap;
-            font-size: 12px;
-        }
-        .info-section {
-            margin-top: 1.5rem;
-        }
-        h1 {
-            margin: 0 0 1.5rem 0;
-            color: #1a1a1a;
-            font-weight: 600;
-            text-align: center;
-            width: 100%;
-        }
-        @media (max-width: 768px) {
-            .transfer-wrapper {
-                display: block;
-            }
-            .transfer-container {
-                display: block;
-                width: 100%;
-                padding: 1.5rem !important;
-                margin-bottom: 1rem;
-            }
-            .container {
-                margin-top: 3.5rem;
-                padding: 1rem;
-            }
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/transfer.css">
 </head>
 <body>
-    <iframe src="header.html?page=transfer.html" frameborder="0" scrolling="no" style="width:100%;height:70px;border:none;display:block;"></iframe>
+    <iframe src="header.html?page=transfer.html" frameborder="0" scrolling="no" style="width:100%;height:70px;border:none;"></iframe>
 
     <div class="container">
-        <h1>P2P文件传输</h1>
-        <div class="transfer-wrapper">
-            <div class="transfer-container" id="uploadSection">
-                <h2>发送文件</h2>
-                <div class="file-input">
-                    <div class="drop-zone">
-                        <svg viewBox="0 0 384 512" width="28" height="28" style="fill: #0d6efd; margin-bottom: 0.5rem; filter: drop-shadow(0 2px 2px rgba(13, 110, 253, 0.2));">
-                            <path d="M369.9 97.9L286 14C277 5 264.8-.1 252.1-.1H48C21.5 0 0 21.5 0 48v416c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V131.9c0-12.7-5.1-25-14.1-34zM332.1 128H256V51.9l76.1 76.1zM48 464V48h160v104c0 13.3 10.7 24 24 24h104v288H48z"/>
-                        </svg>
-                        <span>点击选择或拖放文件到这里</span>
-                        <input type="file" id="fileInput">
-                    </div>
-                    <div class="selected-file"></div>
-                </div>
-                <button onclick="sendFile()" id="sendButton">生成取件码</button>
-                <div id="uploadProgress" class="progress" style="display:none">
-                    <div class="progress-bar"></div>
-                </div>
-                <div id="codeOutput"></div>
+        <div class="transfer-container" id="uploadSection">
+            <h2>发送文件</h2>
+            <input type="file" id="fileInput">
+            <button onclick="sendFile()" id="sendButton">生成取件码</button>
+            <div id="uploadProgress" class="progress">
+                <div class="progress-bar"></div>
             </div>
-
-            <div class="transfer-container" id="downloadSection">
-                <h2>接收文件</h2>
-                <input type="text" id="codeInput" placeholder="输入取件码">
-                <button onclick="receiveFile()">接收文件</button>
-                <div id="downloadProgress" class="progress" style="display:none">
-                    <div class="progress-bar"></div>
-                </div>
-                <div id="downloadOutput"></div>
-            </div>
+            <div id="codeOutput"></div>
         </div>
 
-        <div id="diagnosticOutput" class="diagnostic-info"></div>
-
-        <div class="info-section">
-            <h3>使用说明</h3>
-            <ol>
-                <li>发送方:选择要传输的文件,点击"生成取件码"</li>
-                <li>将生成的取件码发送给接收方</li>
-                <li>接收方:输入取件码,点击"接收文件"</li>
-                <li>等待文件传输完成后下载</li>
-            </ol>
-            <p><strong>注意:</strong>传输过程中请勿关闭页面,建议使用Chrome、Firefox、Edge等现代浏览器。如遇连接问题,请查看下方诊断信息。</p>
+        <div class="transfer-container" id="downloadSection">
+            <h2>接收文件</h2>
+            <input type="text" id="codeInput" placeholder="输入取件码">
+            <button onclick="receiveFile()">接收文件</button>
+            <div id="downloadProgress" class="progress">
+                <div class="progress-bar"></div>
+            </div>
+            <div id="downloadOutput"></div>
         </div>
-    </div>
-
-    <div class="beian">
-        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">京ICP备2025107350号</a>
     </div>
 
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
