@@ -104,15 +104,15 @@ body {
   display: flex;
   flex-direction: row;
   gap: 1rem;
-  align-items: flex-start;
+  align-items: stretch;
 }
 
 .background-tool .file-inputs-container {
-  width: 45%;
+  width: 50%;
 }
 
 .background-tool .preview-container {
-  width: 55%;
+  width: 50%;
 }
 
 h1 {
@@ -127,19 +127,21 @@ h1 {
   display: flex;
   gap: 1rem;
   width: 100%;
-  margin-bottom: 1rem;
+  margin: 0;
 }
 
 .file-input {
   flex: 1;
   margin: 0;
-  padding: 0.75rem;
+  padding: 1rem;
   background: #f8f9fa;
   border-radius: 8px;
   border: 2px dashed #0d6efd;
   transition: all 0.2s;
   position: relative;
   box-shadow: 0 2px 4px rgba(13, 110, 253, 0.05);
+  height: 160px;
+  box-sizing: border-box;
 }
 
 .file-input:hover {
@@ -155,7 +157,7 @@ h1 {
 }
 
 .file-input .drop-zone {
-  padding: 1rem;
+  padding: 0;
   text-align: center;
   color: #6c757d;
   cursor: pointer;
@@ -168,7 +170,7 @@ h1 {
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  min-height: 120px;
+  height: 100%;
   justify-content: center;
 }
 
@@ -234,17 +236,18 @@ h1 {
 
 .preview-container {
   width: 100%;
-  min-height: 200px;
-  max-height: 400px;
-  margin: 1rem 0;
-  padding: 1rem;
+  height: 160px;
+  margin: 0;
+  padding: 0.75rem;
   background: #f8f9fa;
   border-radius: 8px;
-  border: 1px solid #e9ecef;
+  border: 2px dashed #0d6efd;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  box-shadow: 0 2px 4px rgba(13, 110, 253, 0.05);
+  box-sizing: border-box;
 }
 
 #previewCanvas {
