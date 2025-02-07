@@ -1,7 +1,14 @@
 body {
     margin: 0;
     padding: 0;
-    background: #f5f7fa;
+    background:
+        linear-gradient(45deg, #f0f2f5 25%, transparent 25%),
+        linear-gradient(-45deg, #f0f2f5 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #f0f2f5 75%),
+        linear-gradient(-45deg, transparent 75%, #f0f2f5 75%);
+    background-size: 100px 100px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    background-color: #f5f7fa;
     min-height: 100vh;
 }
 .container {
