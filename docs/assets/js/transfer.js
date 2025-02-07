@@ -13,20 +13,24 @@ async function sendFile() {
         return;
     }
 
-    showStatus(`
-        <p>取件码: <span class="code">${peer.id}</span></p>
-        <p>文件名: ${file.name}</p>
-        <p>文件大小: ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
-        <p>等待接收方连接...</p>
-    `, 'info');
-
-    peer.on('connection', (conn) => {
-        showStatus(`
+    // 显示文件信息
+    const output = document.getElementById('codeOutput');
+    output.innerHTML = `
+        <div class="file-info">
             <p>取件码: <span class="code">${peer.id}</span></p>
             <p>文件名: ${file.name}</p>
             <p>文件大小: ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
-            <p>接收方已连接,开始传输...</p>
-        `, 'success');
+        </div>
+        <div class="status-message info">
+            <p>等待接收方连接...</p>
+        </div>
+    `;
+
+    peer.on('connection', (conn) => {
+        // 只更新状态消息
+        const statusDiv = output.querySelector('.status-message');
+        statusDiv.className = 'status-message success';
+        statusDiv.innerHTML = '<p>接收方已连接,开始传输...</p>';
 
         conn.on('open', async () => {
             // 发送文件信息
@@ -58,12 +62,10 @@ async function sendFile() {
                     progressBar.style.width = progress + '%';
                 }
 
-                showStatus(`
-                    <p>取件码: <span class="code">${peer.id}</span></p>
-                    <p>文件名: ${file.name}</p>
-                    <p>文件大小: ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                    <p>文件发送完成!</p>
-                `, 'success');
+                // 只更新状态消息
+                const statusDiv = output.querySelector('.status-message');
+                statusDiv.className = 'status-message success';
+                statusDiv.innerHTML = '<p>文件发送完成!</p>';
             } catch (err) {
                 showError('发送文件时出错: ' + err.message);
             }
@@ -92,7 +94,9 @@ async function receiveFile() {
         return;
     }
 
-    showStatus('正在连接发送方...', 'info');
+    const output = document.getElementById('downloadOutput');
+    output.innerHTML = '<div class="status-message info"><p>正在连接发送方...</p></div>';
+    
     const conn = connectToPeer(code);
     if (!conn) return;
 
@@ -104,7 +108,7 @@ async function receiveFile() {
 
     conn.on('open', () => {
         downloadProgress.style.display = 'block';
-        showStatus('已连接到发送方,等待接收文件...', 'success');
+        output.querySelector('.status-message').innerHTML = '<p>已连接到发送方,等待接收文件...</p>';
     });
 
     conn.on('data', (data) => {
@@ -113,11 +117,17 @@ async function receiveFile() {
                 fileInfo = JSON.parse(data);
                 chunks = [];
                 receivedSize = 0;
-                showStatus(`
-                    <p>文件名: ${fileInfo.name}</p>
-                    <p>文件大小: ${(fileInfo.size / 1024 / 1024).toFixed(2)} MB</p>
-                    <p>正在接收文件...</p>
-                `, 'info');
+                
+                // 显示文件信息和状态
+                output.innerHTML = `
+                    <div class="file-info">
+                        <p>文件名: ${fileInfo.name}</p>
+                        <p>文件大小: ${(fileInfo.size / 1024 / 1024).toFixed(2)} MB</p>
+                    </div>
+                    <div class="status-message info">
+                        <p>正在接收文件...</p>
+                    </div>
+                `;
             } else {
                 chunks.push(data);
                 receivedSize += data.byteLength;
@@ -126,11 +136,32 @@ async function receiveFile() {
 
                 if (receivedSize === fileInfo.size) {
                     const blob = new Blob(chunks);
-                    const url = URL.createObjectURL(blob);
-                    showStatus(`
+                    
+                    // 更新状态信息
+                    const statusDiv = output.querySelector('.status-message');
+                    statusDiv.className = 'status-message success';
+                    statusDiv.innerHTML = `
                         <p>文件接收完成!</p>
-                        <p><a href="${url}" download="${fileInfo.name}" class="download-link">下载 ${fileInfo.name}</a></p>
-                    `, 'success');
+                        <p>正在开始下载...</p>
+                    `;
+
+                    try {
+                        // 使用 FileSaver.js 的 saveAs 函数触发下载
+                        saveAs(blob, fileInfo.name);
+                        
+                        // 保存 URL 用于备份下载链接
+                        const url = URL.createObjectURL(blob);
+                        setTimeout(() => {
+                            statusDiv.innerHTML = `
+                                <p>文件接收完成!</p>
+                                <p>如果下载没有开始,请<a href="${url}" download="${fileInfo.name}" class="download-link">点击这里重新下载</a></p>
+                            `;
+                        }, 1000);
+                    } catch (err) {
+                        console.error('下载失败:', err);
+                        showError('文件下载失败: ' + err.message);
+                    }
+
                     chunks = [];
                 }
             }
