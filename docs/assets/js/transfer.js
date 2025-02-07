@@ -8,23 +8,30 @@ async function sendFile() {
         return;
     }
 
-    if (!peer || !peer.id) {
-        showError('连接未就绪,请刷新页面重试');
-        return;
+    // 重新初始化peer连接以生成新的取件码
+    if (peer) {
+        peer.destroy();
     }
-
-    // 显示文件信息
+    
     const output = document.getElementById('codeOutput');
-    output.innerHTML = `
-        <div class="file-info">
-            <p>取件码: <span class="code">${peer.id}</span></p>
-            <p>文件名: ${file.name}</p>
-            <p>文件大小: ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
-        </div>
-        <div class="status-message info">
-            <p>等待接收方连接...</p>
-        </div>
-    `;
+    output.innerHTML = '<div class="status-message info"><p>正在生成取件码...</p></div>';
+    
+    initPeer();
+    await new Promise((resolve) => {
+        peer.on('open', () => {
+            output.innerHTML = `
+                <div class="file-info">
+                    <p>取件码: <span class="code">${peer.id}</span></p>
+                    <p>文件名: ${file.name}</p>
+                    <p>文件大小: ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                </div>
+                <div class="status-message info">
+                    <p>等待接收方连接...</p>
+                </div>
+            `;
+            resolve();
+        });
+    });
 
     peer.on('connection', (conn) => {
         // 只更新状态消息
