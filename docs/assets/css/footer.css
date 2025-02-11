@@ -1,0 +1,30 @@
+.footer-frame {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background: white;
+    z-index: 100;
+}
+
+.beian {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    padding: 5px 0;
+    background-color: white;
+}
+
+.beian a {
+    color: #666;
+    text-decoration: none;
+}
+
+/* 为footer预留空间 */
+.container {
+    padding-bottom: 40px;
+}
