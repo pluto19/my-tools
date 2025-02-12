@@ -1,18 +1,4 @@
 let peer;
-const ICE_SERVERS = [
-    {
-        urls: [
-            'turn:relay.metered.ca:443?transport=tcp',
-            'turn:relay.metered.ca:80?transport=tcp',
-            'turn:relay.metered.ca:443?transport=udp',
-            'turn:relay.metered.ca:80?transport=udp'
-        ],
-        username: 'e8c7d8a48cf60f9066d4a17e',
-        credential: 'wZWTcesH0L0kGkKh'
-    },
-    { urls: 'stun:stun.miwifi.com:3478' },
-    { urls: 'stun:stun.l.google.com:19302' }
-];
 
 // 初始化PeerJS
 function initPeer() {
@@ -26,7 +12,7 @@ function initPeer() {
         port: 443,
         secure: true,
         config: {
-            'iceServers': ICE_SERVERS,
+            'iceServers': [], // 仅支持局域网连接
             'iceTransportPolicy': 'all'
         },
         debug: 1
