@@ -16,19 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 100);
 });
 
-// 为每个数字生成一个随机替换的映射
-function generateRandomDigitMap() {
-  const map = {};
-  for (let i = 0; i <= 9; i++) {
-    let replacement;
-    do {
-      replacement = Math.floor(Math.random() * 10);
-    } while (replacement === i); // 确保替换的数字与原数字不同
-    map[i] = replacement;
-  }
-  return map;
-}
-
 // 脱敏文本中的数字
 function desensitizeText(showAlert = false) {
   const inputText = document.getElementById('inputText').value;
@@ -38,11 +25,13 @@ function desensitizeText(showAlert = false) {
     return;
   }
   
-  // 生成随机数字映射
-  const digitMap = generateRandomDigitMap();
-  
-  // 替换所有数字
-  const result = inputText.replace(/\d/g, digit => digitMap[digit]);
+  // 替换所有数字，每次都随机生成一个新数字
+  const result = inputText.replace(/\d+/g, match => {
+    // 保持数字长度一致，但每个数字都随机生成
+    return Array.from(match).map(() => {
+      return Math.floor(Math.random() * 10).toString();
+    }).join('');
+  });
   
   document.getElementById('outputText').value = result;
   
