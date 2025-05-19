@@ -32,6 +32,26 @@
             </div>
             <div id="downloadOutput"></div>
         </div>
+        
+        <div class="transfer-container" id="textSendSection">
+            <h2>发送文本</h2>
+            <textarea id="textInput" placeholder="输入要发送的文本..."></textarea>
+            <button onclick="sendText()" id="sendTextButton">生成取件码</button>
+            <div id="textUploadProgress" class="progress">
+                <div class="progress-bar"></div>
+            </div>
+            <div id="textCodeOutput"></div>
+        </div>
+
+        <div class="transfer-container" id="textReceiveSection">
+            <h2>接收文本</h2>
+            <input type="text" id="textCodeInput" placeholder="输入取件码">
+            <button onclick="receiveText()">接收文本</button>
+            <div id="textReceiveProgress" class="progress">
+                <div class="progress-bar"></div>
+            </div>
+            <div id="textDisplay"></div>
+        </div>
     </div>
 
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>

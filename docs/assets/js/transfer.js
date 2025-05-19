@@ -192,3 +192,154 @@ async function receiveFile() {
 document.addEventListener('DOMContentLoaded', () => {
     initPeer();
 });
+
+// 发送文本
+async function sendText() {
+    const textContent = document.getElementById('textInput').value.trim();
+    if (!textContent) {
+        showError('请输入要发送的文本');
+        return;
+    }
+
+    // 重新初始化peer连接以生成新的取件码
+    if (peer) {
+        peer.destroy();
+    }
+    
+    const output = document.getElementById('textCodeOutput');
+    output.innerHTML = '<div class="status-message info"><p>正在生成取件码...</p></div>';
+    
+    initPeer();
+    await new Promise((resolve) => {
+        peer.on('open', () => {
+            // 获取文本字符数
+            const textLength = textContent.length;
+            
+            output.innerHTML = `
+                <div class="text-info">
+                    <p>取件码: <span class="code">${peer.id}</span></p>
+                    <p>文本长度: ${textLength} 字符</p>
+                </div>
+                <div class="status-message info">
+                    <p>等待接收方连接...</p>
+                </div>
+            `;
+            resolve();
+        });
+    });
+
+    peer.on('connection', (conn) => {
+        // 更新状态消息
+        const statusDiv = output.querySelector('.status-message');
+        statusDiv.className = 'status-message success';
+        statusDiv.innerHTML = '<p>接收方已连接,开始传输...</p>';
+
+        conn.on('open', () => {
+            // 发送文本信息
+            conn.send(JSON.stringify({
+                type: 'text-info',
+                length: textContent.length,
+                time: new Date().toISOString()
+            }));
+
+            // 发送实际文本内容
+            conn.send(textContent);
+            
+            // 更新状态消息
+            statusDiv.innerHTML = '<p>文本发送完成!</p>';
+        });
+
+        conn.on('close', () => {
+            showError('接收方已断开连接');
+        });
+
+        conn.on('error', (err) => {
+            showError('传输错误: ' + err.message);
+        });
+    });
+}
+
+// 接收文本
+async function receiveText() {
+    const code = document.getElementById('textCodeInput').value.trim().toUpperCase();
+    if (!code) {
+        showError('请输入取件码');
+        return;
+    }
+
+    if (!peer || !peer.id) {
+        showError('连接未就绪,请刷新页面重试');
+        return;
+    }
+
+    const output = document.getElementById('textDisplay');
+    output.innerHTML = '<div class="status-message info"><p>正在连接发送方...</p></div>';
+    
+    const conn = connectToPeer(code);
+    if (!conn) return;
+
+    let textInfo = null;
+    let receivedText = null;
+
+    conn.on('open', () => {
+        output.innerHTML = '<div class="status-message info"><p>已连接到发送方,等待接收文本...</p></div>';
+    });
+
+    conn.on('data', (data) => {
+        try {
+            if (typeof data === 'string' && data.startsWith('{')) {
+                // 这是文本信息JSON对象
+                textInfo = JSON.parse(data);
+                
+                if (textInfo.type === 'text-info') {
+                    // 显示文本信息
+                    const date = new Date(textInfo.time);
+                    const formattedTime = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+                    
+                    output.innerHTML = `
+                        <div class="text-info">
+                            <p>文本长度: ${textInfo.length} 字符</p>
+                            <p>发送时间: ${formattedTime}</p>
+                        </div>
+                        <div class="status-message info">
+                            <p>正在接收文本...</p>
+                        </div>
+                    `;
+                }
+            } else if (typeof data === 'string') {
+                // 这是实际文本内容
+                receivedText = data;
+                
+                // 更新状态信息并显示文本
+                output.innerHTML = `
+                    <div class="status-message success">
+                        <p>文本接收完成!</p>
+                    </div>
+                    <div class="text-content">${escapeHtml(receivedText)}</div>
+                `;
+            }
+        } catch (err) {
+            showError('接收文本时出错: ' + err.message);
+        }
+    });
+
+    conn.on('close', () => {
+        if (!receivedText) {
+            showError('发送方已断开连接');
+        }
+    });
+
+    conn.on('error', (err) => {
+        showError('传输错误: ' + err.message);
+    });
+}
+
+// HTML转义函数
+function escapeHtml(text) {
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
