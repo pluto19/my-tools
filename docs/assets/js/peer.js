@@ -12,8 +12,19 @@ function initPeer() {
         port: 443,
         secure: true,
         config: {
-            'iceServers': [], // 仅支持局域网连接
-            'iceTransportPolicy': 'all'
+            'iceServers': [
+                // 国内可用的STUN服务器
+                { urls: 'stun:stun.miwifi.com:3478' },     // 小米STUN服务器
+                { urls: 'stun:stun.qq.com:3478' },         // 腾讯STUN服务器
+                { urls: 'stun:stun.chat.bilibili.com:3478' }, // B站STUN服务器
+                { urls: 'stun:stun.voip.eutelia.it:3478' },   // 欧洲服务器，全球可用
+                
+                // 备选国际服务器
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ],
+            'iceTransportPolicy': 'all',
+            'sdpSemantics': 'unified-plan'
         },
         debug: 1
     });
@@ -87,5 +98,14 @@ function showStatus(message, type = 'info') {
     const uploadOutput = document.getElementById('codeOutput');
     if (uploadOutput) {
         uploadOutput.innerHTML = `<div class="status ${type}">${message}</div>`;
+    }
+    // 添加对文本传输元素的支持
+    const textCodeOutput = document.getElementById('textCodeOutput');
+    if (textCodeOutput) {
+        textCodeOutput.innerHTML = `<div class="status ${type}">${message}</div>`;
+    }
+    const textDisplay = document.getElementById('textDisplay');
+    if (textDisplay) {
+        textDisplay.innerHTML = `<div class="status ${type}">${message}</div>`;
     }
 }
