@@ -112,6 +112,7 @@ async function mergePdfs() {
   const reverseB = document.getElementById('reverseB').checked;
   const rotateB = document.getElementById('rotateB').checked;
   const skipLastB = document.getElementById('skipLastB').checked;
+  const rotateA = document.getElementById('rotateA').checked; // 获取旋转正面PDF的状态
   const progressBar = document.querySelector('.progress');
   const progressBarFill = document.querySelector('.progress-bar-fill');
   const progressText = document.querySelector('.progress-text');
@@ -163,6 +164,10 @@ async function mergePdfs() {
 
       if (i < pages1.length) {
         const [page] = await mergedPdf.copyPages(pdf1, [i]);
+        if (rotateA) { // 如果选中旋转正面PDF
+          const currentRotation = page.getRotation().angle;
+          page.setRotation(PDFLib.degrees(currentRotation + 180));
+        }
         mergedPdf.addPage(page);
       }
       if (i < pages2.length) {
